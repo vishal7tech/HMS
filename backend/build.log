@@ -1,0 +1,84 @@
+﻿[INFO] Scanning for projects...
+[INFO] 
+[INFO] -----------------------< com.vishal:hms-backend >-----------------------
+[INFO] Building hms-backend 0.0.1-SNAPSHOT
+[INFO]   from pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- clean:3.4.1:clean (default-clean) @ hms-backend ---
+[INFO] Deleting C:\Users\ACER\OneDrive\Desktop\HMS\HMS\backend\target
+[INFO] 
+[INFO] --- resources:3.3.1:resources (default-resources) @ hms-backend ---
+[INFO] Copying 1 resource from src\main\resources to target\classes
+[INFO] Copying 0 resource from src\main\resources to target\classes
+[INFO] 
+[INFO] --- compiler:3.14.1:compile (default-compile) @ hms-backend ---
+[INFO] Recompiling the module because of changed source code.
+[INFO] Compiling 8 source files with javac [debug parameters release 17] to target\classes
+[INFO] /C:/Users/ACER/OneDrive/Desktop/HMS/HMS/backend/src/main/java/com/vishal/hms_backend/config/SecurityConfig.java: C:\Users\ACER\OneDrive\Desktop\HMS\HMS\backend\src\main\java\com\vishal\hms_backend\config\SecurityConfig.java uses or overrides a deprecated API.
+[INFO] /C:/Users/ACER/OneDrive/Desktop/HMS/HMS/backend/src/main/java/com/vishal/hms_backend/config/SecurityConfig.java: Recompile with -Xlint:deprecation for details.
+[INFO] 
+[INFO] --- resources:3.3.1:testResources (default-testResources) @ hms-backend ---
+[INFO] skip non existing resourceDirectory C:\Users\ACER\OneDrive\Desktop\HMS\HMS\backend\src\test\resources
+[INFO] 
+[INFO] --- compiler:3.14.1:testCompile (default-testCompile) @ hms-backend ---
+[INFO] Recompiling the module because of changed dependency.
+[INFO] Compiling 1 source file with javac [debug parameters release 17] to target\test-classes
+[INFO] 
+[INFO] --- surefire:3.5.4:test (default-test) @ hms-backend ---
+[INFO] Using auto detected provider org.apache.maven.surefire.junitplatform.JUnitPlatformProvider
+[INFO] 
+[INFO] -------------------------------------------------------
+[INFO]  T E S T S
+[INFO] -------------------------------------------------------
+[INFO] Running com.vishal.hms_backend.HmsBackendApplicationTests
+09:43:45.464 [main] INFO org.springframework.test.context.support.AnnotationConfigContextLoaderUtils -- Could not detect default configuration classes for test class [com.vishal.hms_backend.HmsBackendApplicationTests]: HmsBackendApplicationTests does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+09:43:45.580 [main] INFO org.springframework.boot.test.context.SpringBootTestContextBootstrapper -- Found @SpringBootConfiguration com.vishal.hms_backend.HmsBackendApplication for test class com.vishal.hms_backend.HmsBackendApplicationTests
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+
+ :: Spring Boot ::               (v3.5.10)
+
+2026-01-30T09:43:46.032+05:30  INFO 23352 --- [hms-backend] [           main] c.v.h.HmsBackendApplicationTests         : Starting HmsBackendApplicationTests using Java 17.0.3 with PID 23352 (started by ACER in C:\Users\ACER\OneDrive\Desktop\HMS\HMS\backend)
+2026-01-30T09:43:46.034+05:30  INFO 23352 --- [hms-backend] [           main] c.v.h.HmsBackendApplicationTests         : No active profile set, falling back to 1 default profile: "default"
+2026-01-30T09:43:46.955+05:30  INFO 23352 --- [hms-backend] [           main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2026-01-30T09:43:47.029+05:30  INFO 23352 --- [hms-backend] [           main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 56 ms. Found 1 JPA repository interface.
+2026-01-30T09:43:47.704+05:30  INFO 23352 --- [hms-backend] [           main] o.hibernate.jpa.internal.util.LogHelper  : HHH000204: Processing PersistenceUnitInfo [name: default]
+2026-01-30T09:43:47.832+05:30  INFO 23352 --- [hms-backend] [           main] org.hibernate.Version                    : HHH000412: Hibernate ORM core version 6.6.41.Final
+2026-01-30T09:43:47.867+05:30  INFO 23352 --- [hms-backend] [           main] o.h.c.internal.RegionFactoryInitiator    : HHH000026: Second-level cache disabled
+2026-01-30T09:43:48.178+05:30  INFO 23352 --- [hms-backend] [           main] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2026-01-30T09:43:48.216+05:30  INFO 23352 --- [hms-backend] [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2026-01-30T09:43:48.381+05:30  INFO 23352 --- [hms-backend] [           main] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@60194904
+2026-01-30T09:43:48.383+05:30  INFO 23352 --- [hms-backend] [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2026-01-30T09:43:48.423+05:30  WARN 23352 --- [hms-backend] [           main] org.hibernate.orm.deprecation            : HHH90000025: MySQLDialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2026-01-30T09:43:48.436+05:30  INFO 23352 --- [hms-backend] [           main] org.hibernate.orm.connections.pooling    : HHH10001005: Database info:
+	Database JDBC URL [Connecting through datasource 'HikariDataSource (HikariPool-1)']
+	Database driver: undefined/unknown
+	Database version: 8.0.44
+	Autocommit mode: undefined/unknown
+	Isolation level: undefined/unknown
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2026-01-30T09:43:49.021+05:30  INFO 23352 --- [hms-backend] [           main] o.h.e.t.j.p.i.JtaPlatformInitiator       : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2026-01-30T09:43:49.072+05:30  INFO 23352 --- [hms-backend] [           main] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2026-01-30T09:43:49.128+05:30  INFO 23352 --- [hms-backend] [           main] eAuthenticationProviderManagerConfigurer : Global AuthenticationManager configured with AuthenticationProvider bean with name authenticationProvider
+2026-01-30T09:43:49.129+05:30  WARN 23352 --- [hms-backend] [           main] r$InitializeUserDetailsManagerConfigurer : Global AuthenticationManager configured with an AuthenticationProvider bean. UserDetailsService beans will not be used by Spring Security for automatically configuring username/password login. Consider removing the AuthenticationProvider bean. Alternatively, consider using the UserDetailsService in a manually instantiated DaoAuthenticationProvider. If the current configuration is intentional, to turn off this warning, increase the logging level of 'org.springframework.security.config.annotation.authentication.configuration.InitializeUserDetailsBeanManagerConfigurer' to ERROR
+2026-01-30T09:43:49.310+05:30  WARN 23352 --- [hms-backend] [           main] JpaBaseConfiguration$JpaWebConfiguration : spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2026-01-30T09:43:50.610+05:30  INFO 23352 --- [hms-backend] [           main] c.v.h.HmsBackendApplicationTests         : Started HmsBackendApplicationTests in 4.846 seconds (process running for 5.726)
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 5.658 s -- in com.vishal.hms_backend.HmsBackendApplicationTests
+[INFO] 
+[INFO] Results:
+[INFO] 
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0
+[INFO] 
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD SUCCESS
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  10.349 s
+[INFO] Finished at: 2026-01-30T09:43:51+05:30
+[INFO] ------------------------------------------------------------------------
