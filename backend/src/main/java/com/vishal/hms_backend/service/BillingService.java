@@ -1,24 +1,22 @@
 package com.vishal.hms_backend.service;
 
-import com.vishal.hms_backend.dto.BillingRequestDTO;
-import com.vishal.hms_backend.dto.BillingResponseDTO;
+import com.vishal.hms_backend.dto.BillingStatsDTO;
+import com.vishal.hms_backend.dto.InvoiceResponseDTO;
 import com.vishal.hms_backend.entity.Appointment;
-import com.vishal.hms_backend.entity.Billing;
-import com.vishal.hms_backend.entity.Patient;
+import com.vishal.hms_backend.entity.AppointmentStatus;
+import com.vishal.hms_backend.entity.Invoice;
 import com.vishal.hms_backend.entity.PaymentStatus;
-import com.vishal.hms_backend.exception.ConflictException;
-import com.vishal.hms_backend.mapper.BillingMapper;
 import com.vishal.hms_backend.repository.AppointmentRepository;
-import com.vishal.hms_backend.repository.BillingRepository;
-import com.vishal.hms_backend.repository.PatientRepository;
-import jakarta.persistence.EntityNotFoundException;
+import com.vishal.hms_backend.repository.InvoiceRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -27,121 +25,115 @@ import java.util.stream.Collectors;
 @Slf4j
 public class BillingService {
 
-    private final BillingRepository billingRepository;
-    private final PatientRepository patientRepository;
+    private final InvoiceRepository invoiceRepository;
     private final AppointmentRepository appointmentRepository;
-    private final BillingMapper billingMapper;
+    private final InvoiceService invoiceService;
+
+    @Transactional(readOnly = true)
+    public BillingStatsDTO getBillingStats() {
+        try {
+            // Get today's billing (from midnight today to now)
+            LocalDateTime todayStart = LocalDate.now().atStartOfDay();
+            LocalDateTime todayEnd = LocalDate.now().atTime(LocalTime.MAX);
+            
+            List<Invoice> todayInvoices = invoiceRepository.findByCreatedAtBetween(todayStart, todayEnd);
+            BigDecimal todayBilling = todayInvoices.stream()
+                    .map(Invoice::getAmount)
+                    .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+            // Get pending invoices
+            List<Invoice> pendingInvoices = invoiceRepository.findByStatus(PaymentStatus.PENDING);
+            long pendingCount = pendingInvoices.size();
+            BigDecimal pendingAmount = pendingInvoices.stream()
+                    .map(Invoice::getAmount)
+                    .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+            // Get paid invoices (this month)
+            LocalDateTime monthStart = LocalDate.now().withDayOfMonth(1).atStartOfDay();
+            List<Invoice> paidInvoices = invoiceRepository.findByStatusAndCreatedAtAfter(PaymentStatus.PAID, monthStart);
+            BigDecimal paidAmount = paidInvoices.stream()
+                    .map(Invoice::getAmount)
+                    .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+            // Get overdue invoices (pending invoices with due date before today)
+            LocalDate today = LocalDate.now();
+            List<Invoice> overdueInvoices = pendingInvoices.stream()
+                    .filter(invoice -> invoice.getDueDate() != null && invoice.getDueDate().isBefore(today))
+                    .collect(Collectors.toList());
+            long overdueCount = overdueInvoices.size();
+            BigDecimal overdueAmount = overdueInvoices.stream()
+                    .map(Invoice::getAmount)
+                    .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+            // Total revenue (all paid invoices)
+            List<Invoice> allPaidInvoices = invoiceRepository.findByStatus(PaymentStatus.PAID);
+            BigDecimal totalRevenue = allPaidInvoices.stream()
+                    .map(Invoice::getAmount)
+                    .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+            return BillingStatsDTO.builder()
+                    .todayBilling(todayBilling)
+                    .pendingCount(pendingCount)
+                    .paidAmount(paidAmount)
+                    .overdueCount(overdueCount)
+                    .totalRevenue(totalRevenue)
+                    .pendingAmount(pendingAmount)
+                    .overdueAmount(overdueAmount)
+                    .build();
+
+        } catch (Exception e) {
+            log.error("Error calculating billing stats", e);
+            // Return empty stats on error
+            return BillingStatsDTO.builder()
+                    .todayBilling(BigDecimal.ZERO)
+                    .pendingCount(0L)
+                    .paidAmount(BigDecimal.ZERO)
+                    .overdueCount(0L)
+                    .totalRevenue(BigDecimal.ZERO)
+                    .pendingAmount(BigDecimal.ZERO)
+                    .overdueAmount(BigDecimal.ZERO)
+                    .build();
+        }
+    }
 
     @Transactional
-    public BillingResponseDTO createBilling(BillingRequestDTO dto) {
-        Patient patient = patientRepository.findById(dto.getPatientId())
-                .orElseThrow(() -> new EntityNotFoundException("Patient not found"));
-
-        Appointment appointment = appointmentRepository.findById(dto.getAppointmentId())
-                .orElseThrow(() -> new EntityNotFoundException("Appointment not found"));
-
-        Billing billing = Billing.builder()
-                .patient(patient)
-                .appointment(appointment)
-                .amount(dto.getAmount())
-                .paymentMethod(dto.getPaymentMethod())
-                .paymentStatus(dto.getPaymentStatus() != null ? dto.getPaymentStatus() : PaymentStatus.PENDING)
-                .issuedAt(LocalDateTime.now())
-                .build();
-
-        Billing saved = billingRepository.save(billing);
-        return billingMapper.toResponseDto(saved);
+    public int generateBillsFromCompletedAppointments() {
+        try {
+            // Get completed appointments that don't have invoices yet
+            List<Appointment> completedAppointments = getCompletedAppointmentsWithoutInvoices();
+            
+            int generatedCount = 0;
+            for (Appointment appointment : completedAppointments) {
+                try {
+                    invoiceService.generateInvoiceForAppointment(appointment.getId());
+                    generatedCount++;
+                    log.info("Generated invoice for appointment {}", appointment.getId());
+                } catch (Exception e) {
+                    log.error("Failed to generate invoice for appointment {}", appointment.getId(), e);
+                }
+            }
+            
+            log.info("Generated {} bills from completed appointments", generatedCount);
+            return generatedCount;
+            
+        } catch (Exception e) {
+            log.error("Error generating bills from completed appointments", e);
+            return 0;
+        }
     }
 
     @Transactional(readOnly = true)
-    public List<BillingResponseDTO> getBillingsByPatient(Long patientId) {
-        return billingRepository.findByPatientId(patientId).stream()
-                .map(billingMapper::toResponseDto)
+    public List<Appointment> getCompletedAppointmentsWithoutInvoices() {
+        // Get appointments that are completed but don't have invoices
+        List<Appointment> completedAppointments = appointmentRepository.findByStatus(AppointmentStatus.COMPLETED);
+        
+        return completedAppointments.stream()
+                .filter(appointment -> !invoiceRepository.existsByAppointmentId(appointment.getId()))
                 .collect(Collectors.toList());
     }
 
-    @Transactional(readOnly = true)
-    public BillingResponseDTO getBillingById(Long id) {
-        Billing billing = billingRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Billing not found"));
-        return billingMapper.toResponseDto(billing);
-    }
-
     @Transactional
-    public void deleteBilling(Long id) {
-        if (!billingRepository.existsById(id)) {
-            throw new EntityNotFoundException("Billing not found");
-        }
-        billingRepository.deleteById(id);
-    }
-
-    @Transactional
-    public BillingResponseDTO generateBillForAppointment(Long appointmentId) {
-        Appointment appointment = appointmentRepository.findById(appointmentId)
-                .orElseThrow(() -> new EntityNotFoundException("Appointment not found"));
-
-        // Check if bill already exists for this appointment
-        if (billingRepository.existsByAppointmentId(appointmentId)) {
-            throw new ConflictException("Bill already exists for this appointment");
-        }
-
-        // Calculate bill amount based on doctor's specialization
-        BigDecimal amount = calculateConsultationFee(appointment.getDoctor().getSpecialization());
-
-        Billing billing = Billing.builder()
-                .patient(appointment.getPatient())
-                .appointment(appointment)
-                .amount(amount)
-                .paymentMethod("CASH") // Default payment method
-                .paymentStatus(PaymentStatus.PENDING)
-                .issuedAt(LocalDateTime.now())
-                .build();
-
-        Billing saved = billingRepository.save(billing);
-        log.info("Generated bill {} for appointment {}", saved.getId(), appointmentId);
-
-        return billingMapper.toResponseDto(saved);
-    }
-
-    @Transactional
-    public BillingResponseDTO updatePaymentStatus(Long billingId, PaymentStatus status) {
-        Billing billing = billingRepository.findById(billingId)
-                .orElseThrow(() -> new EntityNotFoundException("Billing not found"));
-
-        billing.setPaymentStatus(status);
-
-        Billing saved = billingRepository.save(billing);
-        log.info("Updated payment status for bill {} to {}", billingId, status);
-
-        return billingMapper.toResponseDto(saved);
-    }
-
-    @Transactional(readOnly = true)
-    public List<BillingResponseDTO> getPendingBills() {
-        return billingRepository.findByPaymentStatus(PaymentStatus.PENDING).stream()
-                .map(billingMapper::toResponseDto)
-                .collect(Collectors.toList());
-    }
-
-    @Transactional(readOnly = true)
-    public BigDecimal getTotalRevenue() {
-        return billingRepository.calculateTotalRevenue();
-    }
-
-    private BigDecimal calculateConsultationFee(String specialization) {
-        // Define consultation fees based on specialization
-        switch (specialization.toLowerCase()) {
-            case "cardiology":
-            case "neurology":
-                return new BigDecimal("500.00");
-            case "orthopedics":
-            case "pediatrics":
-                return new BigDecimal("400.00");
-            case "general":
-            case "family medicine":
-                return new BigDecimal("200.00");
-            default:
-                return new BigDecimal("300.00");
-        }
+    public InvoiceResponseDTO generateInvoiceForAppointment(Long appointmentId) {
+        return invoiceService.generateInvoiceForAppointment(appointmentId);
     }
 }

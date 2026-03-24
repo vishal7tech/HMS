@@ -1,6 +1,7 @@
 package com.vishal.hms_backend.dto;
 
 import lombok.*;
+import java.util.List;
 
 @Data
 @Builder
@@ -8,12 +9,12 @@ import lombok.*;
 @AllArgsConstructor
 public class DoctorResponseDTO {
     private Long id;
+    private Long userId;
+    private String username;
     private String name;
-    private String specialization;
+    private List<String> specialization;
     private String email;
-    private String phone;
-    private String qualification;
-    private String availability;
-    private java.time.LocalTime shiftStart;
-    private java.time.LocalTime shiftEnd;
+    private String contactNumber;
+    private String qualifications;
+    private Boolean enabled; // Add user enabled status
 }

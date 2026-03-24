@@ -1,5 +1,6 @@
 package com.vishal.hms_backend.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.*;
 import lombok.*;
 import java.time.LocalDateTime;
@@ -18,7 +19,8 @@ public class AppointmentRequestDTO {
 
     @NotNull(message = "Appointment date and time is required")
     @FutureOrPresent(message = "Appointment must be in the future or present")
-    private LocalDateTime dateTime;
+    @JsonProperty("slotTime")
+    private LocalDateTime slotTime;
 
     private String reason;
     private String notes;

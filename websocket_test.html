@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>HMS WebSocket Test</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.6.1/sockjs.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .notification { 
+            padding: 10px; 
+            margin: 10px 0; 
+            border-radius: 5px; 
+            border-left: 4px solid #007bff; 
+            background-color: #f8f9fa; 
+        }
+        .CREATED { border-left-color: #28a745; }
+        .UPDATED { border-left-color: #ffc107; }
+        .CANCELLED { border-left-color: #dc3545; }
+        .COMPLETED { border-left-color: #6c757d; }
+    </style>
+</head>
+<body>
+    <h1>HMS WebSocket Test Client</h1>
+    <div id="notifications"></div>
+    <div id="status">Connecting...</div>
+
+    <script>
+        let socket = null;
+        let stompClient = null;
+
+        function connect() {
+            socket = new SockJS('http://localhost:8080/ws');
+            stompClient = Stomp.over(socket);
+
+            stompClient.connect({}, function(frame) {
+                console.log('Connected to WebSocket');
+                document.getElementById('status').innerHTML = 'Connected to WebSocket';
+                
+                // Subscribe to appointment updates
+                stompClient.subscribe('/topic/appointments', function(message) {
+                    const notification = JSON.parse(message.body);
+                    addNotification(notification);
+                });
+                
+                // Subscribe to user-specific updates
+                stompClient.subscribe('/user/queue/appointments', function(message) {
+                    const notification = JSON.parse(message.body);
+                    addNotification(notification);
+                });
+            });
+        }
+
+        function addNotification(notification) {
+            const notificationsDiv = document.getElementById('notifications');
+            const notificationDiv = document.createElement('div');
+            notificationDiv.className = `notification ${notification.type}`;
+            notificationDiv.innerHTML = `
+                <strong>${notification.type}</strong>: ${notification.message}<br>
+                <small>Patient: ${notification.patientName} | Doctor: ${notification.doctorName}<br>
+                Time: ${notification.slotTime} | Status: ${notification.status}</small>
+            `;
+            notificationsDiv.insertBefore(notificationDiv, notificationsDiv.firstChild);
+            
+            // Keep only last 10 notifications
+            while (notificationsDiv.children.length > 10) {
+                notificationsDiv.removeChild(notificationsDiv.lastChild);
+            }
+        }
+
+        // Auto-connect
+        connect();
+    </script>
+</body>
+</html>

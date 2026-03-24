@@ -1,0 +1,294 @@
+﻿
+
+content          : {@{i
+                   d=11
+                   ; en
+                   tity
+                   Type
+                   =USE
+                   R; e
+                   ntit
+                   yId=
+                   7; a
+                   ctio
+                   n=LO
+                   GIN;
+                    old
+                   Valu
+                   es=;
+                    new
+                   Valu
+                   es=;
+                    cha
+                   nged
+                   By=7
+                   ; ch
+                   ange
+                   dAt=
+                   2026
+                   -03-
+                   01T1
+                   5:55
+                   :01.
+                   8668
+                   6; i
+                   pAdd
+                   ress
+                   =0:0
+                   :0:0
+                   :0:0
+                   :0:1
+                   ; us
+                   erAg
+                   ent=
+                   Mozi
+                   lla/
+                   5.0 
+                   (Win
+                   dows
+                    
+                   NT; 
+                   Wind
+                   ows 
+                   NT 1
+                   0.0;
+                    en-
+                   US) 
+                   Wind
+                   owsP
+                   ower
+                   Shel
+                   l/5.
+                   1.26
+                   100.
+                   7705
+                   }, @
+                   {id=
+                   10; 
+                   enti
+                   tyTy
+                   pe=U
+                   SER;
+                    ent
+                   ityI
+                   d=12
+                   ; ac
+                   tion
+                   =LOG
+                   IN; 
+                   oldV
+                   alue
+                   s=; 
+                   newV
+                   alue
+                   s=; 
+                   chan
+                   gedB
+                   y=12
+                   ; ch
+                   ange
+                   dAt=
+                   2026
+                   -03-
+                   01T1
+                   5:39
+                   :13.
+                   5367
+                   67; 
+                   ipAd
+                   dres
+                   s=0:
+                   0:0:
+                   0:0:
+                   0:0:
+                   1; u
+                   serA
+                   gent
+                   =Moz
+                   illa
+                   /5.0
+                    (Wi
+                   ndow
+                   s 
+                   NT; 
+                   Wind
+                   ows 
+                   NT 1
+                   0.0;
+                    en-
+                   US) 
+                   Wind
+                   owsP
+                   ower
+                   Shel
+                   l/5.
+                   1.26
+                   100.
+                   7705
+                   }, @
+                   {id=
+                   9; e
+                   ntit
+                   yTyp
+                   e=US
+                   ER; 
+                   enti
+                   tyId
+                   =6; 
+                   acti
+                   on=L
+                   OGIN
+                   ; ol
+                   dVal
+                   ues=
+                   ; ne
+                   wVal
+                   ues=
+                   ; ch
+                   ange
+                   dBy=
+                   6; c
+                   hang
+                   edAt
+                   =202
+                   6-03
+                   -01T
+                   15:3
+                   7:34
+                   .471
+                   704;
+                    ipA
+                   ddre
+                   ss=0
+                   :0:0
+                   :0:0
+                   :0:0
+                   :1; 
+                   user
+                   Agen
+                   t=Mo
+                   zill
+                   a/5.
+                   0 (W
+                   indo
+                   ws 
+                   NT; 
+                   Wind
+                   ows 
+                   NT 1
+                   0.0;
+                    en-
+                   US) 
+                   Wind
+                   owsP
+                   ower
+                   Shel
+                   l/5.
+                   1.26
+                   100.
+                   7705
+                   }, @
+                   {id=
+                   8; e
+                   ntit
+                   yTyp
+                   e=US
+                   ER; 
+                   enti
+                   tyId
+                   =5; 
+                   acti
+                   on=L
+                   OGIN
+                   ; ol
+                   dVal
+                   ues=
+                   ; ne
+                   wVal
+                   ues=
+                   ; ch
+                   ange
+                   dBy=
+                   5; c
+                   hang
+                   edAt
+                   =202
+                   6-03
+                   -01T
+                   15:1
+                   4:16
+                   .891
+                   623;
+                    ipA
+                   ddre
+                   ss=0
+                   :0:0
+                   :0:0
+                   :0:0
+                   :1; 
+                   user
+                   Agen
+                   t=Mo
+                   zill
+                   a/5.
+                   0 (W
+                   indo
+                   ws 
+                   NT; 
+                   Wind
+                   ows 
+                   NT 1
+                   0.0;
+                    en-
+                   US) 
+                   Wind
+                   owsP
+                   ower
+                   Shel
+                   l/5.
+                   1.26
+                   100.
+                   7705
+                   }...
+                   }
+pageable         : @{pa
+                   geNu
+                   mber
+                   =0; 
+                   page
+                   Size
+                   =20;
+                    sor
+                   t=; 
+                   offs
+                   et=0
+                   ; un
+                   page
+                   d=Fa
+                   lse;
+                    pag
+                   ed=T
+                   rue}
+last             : True
+totalElements    : 11
+totalPages       : 1
+size             : 20
+number           : 0
+sort             : @{em
+                   pty=
+                   Fals
+                   e; u
+                   nsor
+                   ted=
+                   Fals
+                   e; s
+                   orte
+                   d=Tr
+                   ue}
+first            : True
+numberOfElements : 11
+empty            : Fals
+                   e
+
+
+

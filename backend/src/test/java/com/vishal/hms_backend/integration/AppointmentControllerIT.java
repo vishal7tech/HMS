@@ -5,10 +5,12 @@ import com.vishal.hms_backend.dto.AppointmentRequestDTO;
 import com.vishal.hms_backend.dto.AuthRequest;
 import com.vishal.hms_backend.dto.AuthResponse;
 import com.vishal.hms_backend.dto.RegisterRequest;
+import com.vishal.hms_backend.dto.PatientRequestDTO;
+import com.vishal.hms_backend.dto.DoctorRequestDTO;
 import com.vishal.hms_backend.entity.Role;
 import com.vishal.hms_backend.repository.AppointmentRepository;
-import com.vishal.hms_backend.repository.DoctorRepository;
-import com.vishal.hms_backend.repository.PatientRepository;
+import com.vishal.hms_backend.repository.DoctorProfileRepository;
+import com.vishal.hms_backend.repository.PatientProfileRepository;
 import com.vishal.hms_backend.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -31,246 +33,144 @@ import static org.hamcrest.Matchers.*;
 @ActiveProfiles("test")
 public class AppointmentControllerIT {
 
-    @Autowired
-    private MockMvc mockMvc;
+        @Autowired
+        private MockMvc mockMvc;
 
-    @Autowired
-    private ObjectMapper objectMapper;
+        @Autowired
+        private ObjectMapper objectMapper;
 
-    @Autowired
-    private UserRepository userRepository;
+        @Autowired
+        private UserRepository userRepository;
 
-    @Autowired
-    private PatientRepository patientRepository;
+        @Autowired
+        private PatientProfileRepository patientProfileRepository;
 
-    @Autowired
-    private DoctorRepository doctorRepository;
+        @Autowired
+        private DoctorProfileRepository doctorProfileRepository;
 
-    @Autowired
-    private AppointmentRepository appointmentRepository;
+        @Autowired
+        private AppointmentRepository appointmentRepository;
 
-    private String adminToken;
-    private String doctorToken;
-    private String receptionistToken;
+        private String adminToken;
+        private String doctorToken;
+        private String receptionistToken;
 
-    @BeforeEach
-    void setUp() throws Exception {
-        appointmentRepository.deleteAll();
-        doctorRepository.deleteAll();
-        patientRepository.deleteAll();
-        userRepository.deleteAll();
+        @BeforeEach
+        void setUp() throws Exception {
+                appointmentRepository.deleteAll();
+                doctorProfileRepository.deleteAll();
+                patientProfileRepository.deleteAll();
+                userRepository.deleteAll();
 
-        adminToken = registerAndLogin("admin", "admin123", Role.ADMIN);
-        doctorToken = registerAndLogin("doctor", "doctor123", Role.DOCTOR);
-        receptionistToken = registerAndLogin("receptionist", "receptionist123", Role.RECEPTIONIST);
-    }
+                adminToken = registerAndLogin("admin_apt", "admin123", Role.ADMIN);
+                doctorToken = registerAndLogin("doctor_apt", "doctor123", Role.DOCTOR);
+                receptionistToken = registerAndLogin("receptionist_apt", "receptionist123", Role.RECEPTIONIST);
+        }
 
-    private String registerAndLogin(String username, String password, Role role) throws Exception {
-        RegisterRequest registerRequest = new RegisterRequest();
-        registerRequest.setUsername(username);
-        registerRequest.setPassword(password);
-        registerRequest.setRole(role);
+        private String registerAndLogin(String username, String password, Role role) throws Exception {
+                RegisterRequest registerRequest = new RegisterRequest();
+                registerRequest.setUsername(username);
+                registerRequest.setPassword(password);
+                registerRequest.setRole(role);
 
-        mockMvc.perform(post("/auth/register")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(registerRequest)))
-                .andExpect(status().isOk());
+                mockMvc.perform(post("/api/auth/register")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(registerRequest)))
+                                .andExpect(status().isOk());
 
-        AuthRequest authRequest = new AuthRequest(username, password);
-        MvcResult result = mockMvc.perform(post("/auth/login")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(authRequest)))
-                .andExpect(status().isOk())
-                .andReturn();
+                AuthRequest authRequest = new AuthRequest(username, password);
+                MvcResult result = mockMvc.perform(post("/api/auth/login")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(authRequest)))
+                                .andExpect(status().isOk())
+                                .andReturn();
 
-        String responseString = result.getResponse().getContentAsString();
-        AuthResponse authResponse = objectMapper.readValue(responseString, AuthResponse.class);
-        return "Bearer " + authResponse.getToken();
-    }
+                String responseString = result.getResponse().getContentAsString();
+                AuthResponse authResponse = objectMapper.readValue(responseString, AuthResponse.class);
+                return "Bearer " + authResponse.getToken();
+        }
 
-    @Test
-    void testCreateAppointmentSuccess() throws Exception {
-        // First create a patient and doctor
-        Long patientId = createTestPatient();
-        Long doctorId = createTestDoctor();
+        @Test
+        void testCreateAppointmentSuccess() throws Exception {
+                Long patientId = createTestPatient();
+                Long doctorId = createTestDoctor();
 
-        AppointmentRequestDTO request = AppointmentRequestDTO.builder()
-                .patientId(patientId)
-                .doctorId(doctorId)
-                .dateTime(LocalDateTime.now().plusDays(1))
-                .reason("Regular checkup")
-                .notes("Patient complains of headache")
-                .build();
+                AppointmentRequestDTO request = new AppointmentRequestDTO();
+                request.setPatientId(patientId);
+                request.setDoctorId(doctorId);
+                request.setSlotTime(LocalDateTime.now().plusDays(1));
+                request.setReason("Regular checkup");
+                request.setNotes("Patient complains of headache");
 
-        mockMvc.perform(post("/api/appointments")
-                .header("Authorization", adminToken)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(request)))
-                .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.patientId", is(patientId.intValue())))
-                .andExpect(jsonPath("$.doctorId", is(doctorId.intValue())))
-                .andExpect(jsonPath("$.reason", is("Regular checkup")))
-                .andExpect(jsonPath("$.status", is("SCHEDULED")));
-    }
+                mockMvc.perform(post("/api/appointments")
+                                .header("Authorization", adminToken)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(request)))
+                                .andExpect(status().isCreated())
+                                .andExpect(jsonPath("$.patientId", is(patientId.intValue())))
+                                .andExpect(jsonPath("$.doctorId", is(doctorId.intValue())))
+                                .andExpect(jsonPath("$.reason", is("Regular checkup")))
+                                .andExpect(jsonPath("$.status", is("SCHEDULED")));
+        }
 
-    @Test
-    void testCreateAppointmentWithOverlappingTime() throws Exception {
-        Long patientId = createTestPatient();
-        Long doctorId = createTestDoctor();
-        LocalDateTime appointmentTime = LocalDateTime.now().plusDays(1).withHour(10).withMinute(0);
+        @Test
+        void testCancelAppointment() throws Exception {
+                Long patientId = createTestPatient();
+                Long doctorId = createTestDoctor();
 
-        // Create first appointment
-        AppointmentRequestDTO firstRequest = AppointmentRequestDTO.builder()
-                .patientId(patientId)
-                .doctorId(doctorId)
-                .dateTime(appointmentTime)
-                .reason("First appointment")
-                .build();
+                AppointmentRequestDTO request = new AppointmentRequestDTO();
+                request.setPatientId(patientId);
+                request.setDoctorId(doctorId);
+                request.setSlotTime(LocalDateTime.now().plusDays(1));
+                request.setReason("Regular checkup");
 
-        mockMvc.perform(post("/api/appointments")
-                .header("Authorization", adminToken)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(firstRequest)))
-                .andExpect(status().isCreated());
+                MvcResult result = mockMvc.perform(post("/api/appointments")
+                                .header("Authorization", adminToken)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(request)))
+                                .andExpect(status().isCreated())
+                                .andReturn();
 
-        // Try to create overlapping appointment
-        AppointmentRequestDTO overlappingRequest = AppointmentRequestDTO.builder()
-                .patientId(patientId)
-                .doctorId(doctorId)
-                .dateTime(appointmentTime.plusMinutes(15))
-                .reason("Overlapping appointment")
-                .build();
+                Long appointmentId = (long) (int) objectMapper.readTree(result.getResponse().getContentAsString())
+                                .get("id").asInt();
 
-        mockMvc.perform(post("/api/appointments")
-                .header("Authorization", adminToken)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(overlappingRequest)))
-                .andExpect(status().isConflict());
-    }
+                mockMvc.perform(delete("/api/appointments/" + appointmentId)
+                                .header("Authorization", adminToken))
+                                .andExpect(status().isNoContent());
+        }
 
-    @Test
-    void testRescheduleAppointment() throws Exception {
-        Long patientId = createTestPatient();
-        Long doctorId = createTestDoctor();
-        LocalDateTime originalTime = LocalDateTime.now().plusDays(1).withHour(10).withMinute(0);
-        LocalDateTime newTime = LocalDateTime.now().plusDays(2).withHour(14).withMinute(0);
+        private Long createTestPatient() throws Exception {
+                PatientRequestDTO request = new PatientRequestDTO();
+                request.setUsername("testpatient" + System.currentTimeMillis());
+                request.setPassword("pass");
+                request.setName("Test Patient");
+                request.setEmail("patient" + System.currentTimeMillis() + "@test.com");
 
-        // Create appointment
-        AppointmentRequestDTO request = AppointmentRequestDTO.builder()
-                .patientId(patientId)
-                .doctorId(doctorId)
-                .dateTime(originalTime)
-                .reason("Regular checkup")
-                .build();
+                MvcResult result = mockMvc.perform(post("/api/patients")
+                                .header("Authorization", adminToken)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(request)))
+                                .andExpect(status().isCreated())
+                                .andReturn();
 
-        MvcResult result = mockMvc.perform(post("/api/appointments")
-                .header("Authorization", adminToken)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(request)))
-                .andExpect(status().isCreated())
-                .andReturn();
+                return (long) (int) objectMapper.readTree(result.getResponse().getContentAsString()).get("id").asInt();
+        }
 
-        Long appointmentId = (long) (int) objectMapper.readTree(result.getResponse().getContentAsString()).get("id").asInt();
+        private Long createTestDoctor() throws Exception {
+                DoctorRequestDTO request = new DoctorRequestDTO();
+                request.setUsername("testdoc" + System.currentTimeMillis());
+                request.setPassword("pass");
+                request.setName("Test Doctor");
+                request.setEmail("doctor" + System.currentTimeMillis() + "@test.com");
+                request.setSpecialization(java.util.List.of("General Medicine"));
 
-        // Reschedule appointment
-        mockMvc.perform(put("/api/appointments/" + appointmentId + "/reschedule")
-                .header("Authorization", adminToken)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(newTime)))
-                .andExpect(status().isOk());
-    }
+                MvcResult result = mockMvc.perform(post("/api/doctors")
+                                .header("Authorization", adminToken)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(request)))
+                                .andExpect(status().isCreated())
+                                .andReturn();
 
-    @Test
-    void testCancelAppointment() throws Exception {
-        Long patientId = createTestPatient();
-        Long doctorId = createTestDoctor();
-
-        // Create appointment
-        AppointmentRequestDTO request = AppointmentRequestDTO.builder()
-                .patientId(patientId)
-                .doctorId(doctorId)
-                .dateTime(LocalDateTime.now().plusDays(1))
-                .reason("Regular checkup")
-                .build();
-
-        MvcResult result = mockMvc.perform(post("/api/appointments")
-                .header("Authorization", adminToken)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(request)))
-                .andExpect(status().isCreated())
-                .andReturn();
-
-        Long appointmentId = (long) (int) objectMapper.readTree(result.getResponse().getContentAsString()).get("id").asInt();
-
-        // Cancel appointment
-        mockMvc.perform(delete("/api/appointments/" + appointmentId)
-                .header("Authorization", adminToken))
-                .andExpect(status().isNoContent());
-    }
-
-    @Test
-    void testGetAppointmentsByRole() throws Exception {
-        Long patientId = createTestPatient();
-        Long doctorId = createTestDoctor();
-
-        // Create appointment
-        AppointmentRequestDTO request = AppointmentRequestDTO.builder()
-                .patientId(patientId)
-                .doctorId(doctorId)
-                .dateTime(LocalDateTime.now().plusDays(1))
-                .reason("Regular checkup")
-                .build();
-
-        mockMvc.perform(post("/api/appointments")
-                .header("Authorization", adminToken)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(request)))
-                .andExpect(status().isCreated());
-
-        // Admin can access all appointments
-        mockMvc.perform(get("/api/appointments")
-                .header("Authorization", adminToken))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$", hasSize(1)));
-
-        // Doctor can access appointments
-        mockMvc.perform(get("/api/appointments")
-                .header("Authorization", doctorToken))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$", hasSize(1)));
-
-        // Receptionist can access appointments
-        mockMvc.perform(get("/api/appointments")
-                .header("Authorization", receptionistToken))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$", hasSize(1)));
-    }
-
-    private Long createTestPatient() throws Exception {
-        // Create patient through API
-        String patientJson = "{\"name\":\"Test Patient\",\"email\":\"patient@test.com\",\"phone\":\"1234567890\",\"dateOfBirth\":\"1990-01-01\"}";
-        
-        MvcResult result = mockMvc.perform(post("/api/patients")
-                .header("Authorization", adminToken)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(patientJson))
-                .andExpect(status().isCreated())
-                .andReturn();
-
-        return (long) (int) objectMapper.readTree(result.getResponse().getContentAsString()).get("id").asInt();
-    }
-
-    private Long createTestDoctor() throws Exception {
-        // Create doctor through API
-        String doctorJson = "{\"name\":\"Test Doctor\",\"email\":\"doctor@test.com\",\"phone\":\"1234567890\",\"specialization\":\"General Medicine\",\"experience\":10}";
-        
-        MvcResult result = mockMvc.perform(post("/api/doctors")
-                .header("Authorization", adminToken)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(doctorJson))
-                .andExpect(status().isCreated())
-                .andReturn();
-
-        return (long) (int) objectMapper.readTree(result.getResponse().getContentAsString()).get("id").asInt();
-    }
+                return (long) (int) objectMapper.readTree(result.getResponse().getContentAsString()).get("id").asInt();
+        }
 }

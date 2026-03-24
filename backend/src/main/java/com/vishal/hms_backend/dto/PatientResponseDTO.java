@@ -9,12 +9,17 @@ import java.time.LocalDate;
 @AllArgsConstructor
 public class PatientResponseDTO {
     private Long id;
+    private Long userId;
+    private String username;
     private String name;
-    private Integer age;
     private String email;
-    private String phoneNumber;
-    private String medicalHistory;
+    private String contactNumber;
     private String address;
-    private String gender;
+    private String emergencyContact;
+    private String bloodGroup;
+    private String allergies;
     private LocalDate dateOfBirth;
+    private String gender;
+    private String medicalHistory;
+    private Boolean enabled;
 }

@@ -3,6 +3,8 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../services/api';
 import { useAuth } from '../contexts/AuthContext';
+import { jwtDecode } from 'jwt-decode';
+import { Link } from 'react-router-dom';
 
 export default function Login() {
     const [username, setUsername] = useState('');
@@ -16,7 +18,21 @@ export default function Login() {
         try {
             const res = await api.post('/auth/login', { username, password });
             login(res.data.token);
-            navigate('/dashboard');
+
+            const decoded: any = jwtDecode(res.data.token);
+            const role = decoded.role || (decoded.roles && decoded.roles[0]) || '';
+
+            if (role === 'ROLE_PATIENT' || role === 'PATIENT') {
+                navigate('/patient');
+            } else if (role === 'ROLE_DOCTOR' || role === 'DOCTOR') {
+                navigate('/doctor');
+            } else if (role === 'ROLE_RECEPTIONIST' || role === 'RECEPTIONIST') {
+                navigate('/receptionist');
+            } else if (role === 'ROLE_ADMIN' || role === 'ADMIN') {
+                navigate('/admin-dashboard');
+            } else {
+                navigate('/dashboard');
+            }
         } catch (err: any) {
             setError(err.response?.data?.message || 'Login failed');
         }
@@ -63,6 +79,12 @@ export default function Login() {
                 >
                     Login
                 </button>
+
+                <div className="mt-4 text-center">
+                    <p className="text-gray-600 text-sm">
+                        New patient? <Link to="/register/patient" className="text-blue-600 hover:underline font-semibold">Sign Up Here</Link>
+                    </p>
+                </div>
 
                 {error && <p className="text-red-500 text-sm mt-4 text-center">{error}</p>}
             </form>

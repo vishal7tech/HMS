@@ -1,0 +1,13 @@
+﻿{
+    "id":  1,
+    "userId":  3,
+    "username":  "doctor",
+    "name":  "Dr. Smith",
+    "specialization":  [
+                           "General Medicine",
+                           "Cardiology"
+                       ],
+    "email":  "doctor@hms.com",
+    "contactNumber":  "+1234567890",
+    "qualifications":  "MBBS, MD"
+}

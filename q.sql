@@ -1,0 +1,1 @@
+SET FOREIGN_KEY_CHECKS = 0; TRUNCATE TABLE users; TRUNCATE TABLE doctor_profiles; TRUNCATE TABLE patient_profiles; TRUNCATE TABLE audit_logs; TRUNCATE TABLE appointments; SET FOREIGN_KEY_CHECKS = 1;  

@@ -10,9 +10,10 @@ import org.mapstruct.Mapping;
 public interface AppointmentMapper {
 
     @Mapping(source = "patient.id", target = "patientId")
-    @Mapping(source = "patient.name", target = "patientName")
+    @Mapping(source = "patient.user.name", target = "patientName")
     @Mapping(source = "doctor.id", target = "doctorId")
-    @Mapping(source = "doctor.name", target = "doctorName")
+    @Mapping(source = "doctor.user.name", target = "doctorName")
+    @Mapping(target = "suggestedSlots", ignore = true)
     AppointmentResponseDTO toResponseDto(Appointment appointment);
 
     @Mapping(target = "id", ignore = true)
@@ -20,5 +21,11 @@ public interface AppointmentMapper {
     @Mapping(target = "doctor", ignore = true)
     @Mapping(target = "status", ignore = true)
     @Mapping(target = "endTime", ignore = true)
+    @Mapping(target = "createdBy", ignore = true)
+    @Mapping(target = "createdAt", ignore = true)
+    @Mapping(target = "updatedAt", ignore = true)
+    @Mapping(target = "reason", source = "reason")
+    @Mapping(target = "notes", source = "notes")
+    @Mapping(target = "slotTime", source = "slotTime")
     Appointment toEntity(AppointmentRequestDTO dto);
 }

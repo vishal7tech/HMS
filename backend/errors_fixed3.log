@@ -1,0 +1,81 @@
+[INFO] Scanning for projects...
+[INFO] 
+[INFO] -----------------------< com.vishal:hms-backend >-----------------------
+[INFO] Building hms-backend 0.0.1-SNAPSHOT
+[INFO]   from pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- clean:3.4.1:clean (default-clean) @ hms-backend ---
+[INFO] Deleting C:\Users\ACER\OneDrive\Desktop\HMS\HMS\backend\target
+[INFO] 
+[INFO] --- resources:3.3.1:resources (default-resources) @ hms-backend ---
+[INFO] Copying 1 resource from src\main\resources to target\classes
+[INFO] Copying 3 resources from src\main\resources to target\classes
+[INFO] 
+[INFO] --- compiler:3.14.1:compile (default-compile) @ hms-backend ---
+[INFO] Recompiling the module because of changed source code.
+[INFO] Compiling 66 source files with javac [debug parameters release 17] to target\classes
+[WARNING] /C:/Users/ACER/OneDrive/Desktop/HMS/HMS/backend/src/main/java/com/vishal/hms_backend/entity/RefreshToken.java:[39,21] @Builder will ignore the initializing expression entirely. If you want the initializing expression to serve as default, add @Builder.Default. If it is not supposed to be settable during building, make the field final.
+[INFO] /C:/Users/ACER/OneDrive/Desktop/HMS/HMS/backend/src/main/java/com/vishal/hms_backend/config/SecurityConfig.java: Some input files use or override a deprecated API.
+[INFO] /C:/Users/ACER/OneDrive/Desktop/HMS/HMS/backend/src/main/java/com/vishal/hms_backend/config/SecurityConfig.java: Recompile with -Xlint:deprecation for details.
+[INFO] 
+[INFO] --- resources:3.3.1:testResources (default-testResources) @ hms-backend ---
+[INFO] skip non existing resourceDirectory C:\Users\ACER\OneDrive\Desktop\HMS\HMS\backend\src\test\resources
+[INFO] 
+[INFO] --- compiler:3.14.1:testCompile (default-testCompile) @ hms-backend ---
+[INFO] Recompiling the module because of changed dependency.
+[INFO] Compiling 7 source files with javac [debug parameters release 17] to target\test-classes
+[INFO] Some messages have been simplified; recompile with -Xdiags:verbose to get full output
+[INFO] -------------------------------------------------------------
+[ERROR] COMPILATION ERROR : 
+[INFO] -------------------------------------------------------------
+[ERROR] /C:/Users/ACER/OneDrive/Desktop/HMS/HMS/backend/src/test/java/com/vishal/hms_backend/integration/AppointmentControllerIT.java:[165,43] incompatible types: java.lang.String cannot be converted to java.util.List<java.lang.String>
+[ERROR] /C:/Users/ACER/OneDrive/Desktop/HMS/HMS/backend/src/test/java/com/vishal/hms_backend/integration/PatientControllerSecurityIT.java:[86,24] cannot find symbol
+  symbol:   method setPhoneNumber(java.lang.String)
+  location: variable request of type com.vishal.hms_backend.dto.PatientRequestDTO
+[ERROR] /C:/Users/ACER/OneDrive/Desktop/HMS/HMS/backend/src/test/java/com/vishal/hms_backend/service/AppointmentServiceTest.java:[70,34] incompatible types: java.lang.String cannot be converted to java.util.List<java.lang.String>
+[ERROR] /C:/Users/ACER/OneDrive/Desktop/HMS/HMS/backend/src/test/java/com/vishal/hms_backend/service/PatientServiceTest.java:[63,23] cannot find symbol
+  symbol:   method setPhoneNumber(java.lang.String)
+  location: variable patientProfile of type com.vishal.hms_backend.entity.PatientProfile
+[ERROR] /C:/Users/ACER/OneDrive/Desktop/HMS/HMS/backend/src/test/java/com/vishal/hms_backend/service/PatientServiceTest.java:[70,19] cannot find symbol
+  symbol:   method setPhoneNumber(java.lang.String)
+  location: variable requestDTO of type com.vishal.hms_backend.dto.PatientRequestDTO
+[ERROR] /C:/Users/ACER/OneDrive/Desktop/HMS/HMS/backend/src/test/java/com/vishal/hms_backend/service/PatientServiceTest.java:[76,20] cannot find symbol
+  symbol:   method setPhoneNumber(java.lang.String)
+  location: variable responseDTO of type com.vishal.hms_backend.dto.PatientResponseDTO
+[ERROR] /C:/Users/ACER/OneDrive/Desktop/HMS/HMS/backend/src/test/java/com/vishal/hms_backend/service/PatientServiceTest.java:[120,34] cannot find symbol
+  symbol:   method toEntity(com.vishal.hms_backend.dto.PatientRequestDTO)
+  location: variable patientProfileMapper of type com.vishal.hms_backend.mapper.PatientProfileMapper
+[INFO] 7 errors 
+[INFO] -------------------------------------------------------------
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD FAILURE
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  11.221 s
+[INFO] Finished at: 2026-02-27T23:40:03+05:30
+[INFO] ------------------------------------------------------------------------
+[ERROR] Failed to execute goal org.apache.maven.plugins:maven-compiler-plugin:3.14.1:testCompile (default-testCompile) on project hms-backend: Compilation failure: Compilation failure: 
+[ERROR] /C:/Users/ACER/OneDrive/Desktop/HMS/HMS/backend/src/test/java/com/vishal/hms_backend/integration/AppointmentControllerIT.java:[165,43] incompatible types: java.lang.String cannot be converted to java.util.List<java.lang.String>
+[ERROR] /C:/Users/ACER/OneDrive/Desktop/HMS/HMS/backend/src/test/java/com/vishal/hms_backend/integration/PatientControllerSecurityIT.java:[86,24] cannot find symbol
+[ERROR]   symbol:   method setPhoneNumber(java.lang.String)
+[ERROR]   location: variable request of type com.vishal.hms_backend.dto.PatientRequestDTO
+[ERROR] /C:/Users/ACER/OneDrive/Desktop/HMS/HMS/backend/src/test/java/com/vishal/hms_backend/service/AppointmentServiceTest.java:[70,34] incompatible types: java.lang.String cannot be converted to java.util.List<java.lang.String>
+[ERROR] /C:/Users/ACER/OneDrive/Desktop/HMS/HMS/backend/src/test/java/com/vishal/hms_backend/service/PatientServiceTest.java:[63,23] cannot find symbol
+[ERROR]   symbol:   method setPhoneNumber(java.lang.String)
+[ERROR]   location: variable patientProfile of type com.vishal.hms_backend.entity.PatientProfile
+[ERROR] /C:/Users/ACER/OneDrive/Desktop/HMS/HMS/backend/src/test/java/com/vishal/hms_backend/service/PatientServiceTest.java:[70,19] cannot find symbol
+[ERROR]   symbol:   method setPhoneNumber(java.lang.String)
+[ERROR]   location: variable requestDTO of type com.vishal.hms_backend.dto.PatientRequestDTO
+[ERROR] /C:/Users/ACER/OneDrive/Desktop/HMS/HMS/backend/src/test/java/com/vishal/hms_backend/service/PatientServiceTest.java:[76,20] cannot find symbol
+[ERROR]   symbol:   method setPhoneNumber(java.lang.String)
+[ERROR]   location: variable responseDTO of type com.vishal.hms_backend.dto.PatientResponseDTO
+[ERROR] /C:/Users/ACER/OneDrive/Desktop/HMS/HMS/backend/src/test/java/com/vishal/hms_backend/service/PatientServiceTest.java:[120,34] cannot find symbol
+[ERROR]   symbol:   method toEntity(com.vishal.hms_backend.dto.PatientRequestDTO)
+[ERROR]   location: variable patientProfileMapper of type com.vishal.hms_backend.mapper.PatientProfileMapper
+[ERROR] -> [Help 1]
+[ERROR] 
+[ERROR] To see the full stack trace of the errors, re-run Maven with the -e switch.
+[ERROR] Re-run Maven using the -X switch to enable full debug logging.
+[ERROR] 
+[ERROR] For more information about the errors and possible solutions, please read the following articles:
+[ERROR] [Help 1] http://cwiki.apache.org/confluence/display/MAVEN/MojoFailureException

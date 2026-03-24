@@ -1,0 +1,25 @@
+﻿
+
+id             : 8
+patientId      : 1
+patientName    : John Doe
+doctorId       : 2
+doctorName     : Dr. 
+                 Feedback 
+                 (Updated)
+slotTime       : 2026-03-05
+                 T10:00:00
+endTime        : 2026-03-05
+                 T10:30:00
+status         : SCHEDULED
+reason         : Follow up 
+                 for 
+                 Neurology
+notes          : Patient 
+                 has 
+                 recurring 
+                 headaches.
+suggestedSlots : 
+
+
+

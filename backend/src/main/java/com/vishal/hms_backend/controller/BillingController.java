@@ -1,47 +1,59 @@
 package com.vishal.hms_backend.controller;
 
-import com.vishal.hms_backend.dto.BillingRequestDTO;
-import com.vishal.hms_backend.dto.BillingResponseDTO;
+import com.vishal.hms_backend.dto.BillingStatsDTO;
+import com.vishal.hms_backend.entity.Appointment;
+import com.vishal.hms_backend.entity.AppointmentStatus;
 import com.vishal.hms_backend.service.BillingService;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Map;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/billings")
+@RequestMapping("/api/billing")
 @RequiredArgsConstructor
+@Slf4j
 public class BillingController {
 
     private final BillingService billingService;
 
-    @PostMapping
-    @PreAuthorize("hasAnyRole('ADMIN', 'RECEPTIONIST')")
-    public ResponseEntity<BillingResponseDTO> createBilling(@Valid @RequestBody BillingRequestDTO dto) {
-        BillingResponseDTO created = billingService.createBilling(dto);
-        return new ResponseEntity<>(created, HttpStatus.CREATED);
+    @GetMapping("/stats")
+    @PreAuthorize("hasAnyRole('ADMIN', 'RECEPTIONIST', 'BILLING')")
+    public ResponseEntity<BillingStatsDTO> getBillingStats() {
+        log.info("Fetching billing statistics");
+        BillingStatsDTO stats = billingService.getBillingStats();
+        return ResponseEntity.ok(stats);
     }
 
-    @GetMapping("/patient/{patientId}")
-    @PreAuthorize("hasAnyRole('ADMIN', 'RECEPTIONIST', 'DOCTOR')")
-    public ResponseEntity<List<BillingResponseDTO>> getBillingsByPatient(@PathVariable Long patientId) {
-        return ResponseEntity.ok(billingService.getBillingsByPatient(patientId));
+    @PostMapping("/generate-from-completed")
+    @PreAuthorize("hasAnyRole('ADMIN', 'RECEPTIONIST', 'BILLING')")
+    public ResponseEntity<Map<String, Integer>> generateBillsFromCompletedAppointments() {
+        log.info("Generating bills from completed appointments");
+        int generatedCount = billingService.generateBillsFromCompletedAppointments();
+        return ResponseEntity.ok(Map.of("count", generatedCount));
     }
 
-    @GetMapping("/{id}")
-    @PreAuthorize("hasAnyRole('ADMIN', 'RECEPTIONIST', 'DOCTOR')")
-    public ResponseEntity<BillingResponseDTO> getBilling(@PathVariable Long id) {
-        return ResponseEntity.ok(billingService.getBillingById(id));
+    @GetMapping("/completed-appointments")
+    @PreAuthorize("hasAnyRole('ADMIN', 'RECEPTIONIST', 'BILLING')")
+    public ResponseEntity<List<Appointment>> getCompletedAppointments() {
+        log.info("Fetching completed appointments for billing");
+        List<Appointment> appointments = billingService.getCompletedAppointmentsWithoutInvoices();
+        return ResponseEntity.ok(appointments);
     }
 
-    @DeleteMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<Void> deleteBilling(@PathVariable Long id) {
-        billingService.deleteBilling(id);
-        return ResponseEntity.noContent().build();
+    @PostMapping("/generate/{appointmentId}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'RECEPTIONIST', 'BILLING')")
+    public ResponseEntity<?> generateBillForAppointment(@PathVariable Long appointmentId) {
+        log.info("Generating bill for appointment: {}", appointmentId);
+        try {
+            return ResponseEntity.ok(billingService.generateInvoiceForAppointment(appointmentId));
+        } catch (Exception e) {
+            log.error("Failed to generate bill for appointment {}", appointmentId, e);
+            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
+        }
     }
 }

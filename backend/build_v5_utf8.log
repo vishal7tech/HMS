@@ -1,0 +1,22 @@
+﻿[INFO] Scanning for projects...
+[INFO] 
+[INFO] -----------------------< com.vishal:hms-backend >-----------------------
+[INFO] Building hms-backend 0.0.1-SNAPSHOT
+[INFO]   from pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- clean:3.4.1:clean (default-clean) @ hms-backend ---
+[INFO] Deleting C:\Users\ACER\OneDrive\Desktop\HMS\HMS\backend\target
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD FAILURE
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  2.022 s
+[INFO] Finished at: 2026-03-01T15:43:24+05:30
+[INFO] ------------------------------------------------------------------------
+[ERROR] Failed to execute goal org.apache.maven.plugins:maven-clean-plugin:3.4.1:clean (default-clean) on project hms-backend: Failed to clean project: Failed to delete C:\Users\ACER\OneDrive\Desktop\HMS\HMS\backend\target\hms-backend-0.0.1-SNAPSHOT.jar: C:\Users\ACER\OneDrive\Desktop\HMS\HMS\backend\target\hms-backend-0.0.1-SNAPSHOT.jar: The process cannot access the file because it is being used by another process -> [Help 1]
+[ERROR] 
+[ERROR] To see the full stack trace of the errors, re-run Maven with the -e switch.
+[ERROR] Re-run Maven using the -X switch to enable full debug logging.
+[ERROR] 
+[ERROR] For more information about the errors and possible solutions, please read the following articles:
+[ERROR] [Help 1] http://cwiki.apache.org/confluence/display/MAVEN/MojoExecutionException

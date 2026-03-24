@@ -17,20 +17,28 @@ public interface AppointmentRepository extends JpaRepository<Appointment, Long> 
                         "WHERE a.doctor.id = :doctorId " +
                         "AND a.status NOT IN (com.vishal.hms_backend.entity.AppointmentStatus.CANCELLED, com.vishal.hms_backend.entity.AppointmentStatus.NO_SHOW) "
                         +
-                        "AND ((a.dateTime < :end AND a.endTime > :start))")
+                        "AND ((a.slotTime < :end AND a.endTime > :start))")
         boolean existsOverlappingAppointment(
                         @Param("doctorId") Long doctorId,
                         @Param("start") LocalDateTime start,
                         @Param("end") LocalDateTime end);
 
-        List<Appointment> findByDoctorIdAndDateTimeBetween(
+        List<Appointment> findByDoctorIdAndSlotTimeBetween(
                         Long doctorId, LocalDateTime start, LocalDateTime end);
 
-        List<Appointment> findByPatientIdOrderByDateTimeDesc(Long patientId);
+        List<Appointment> findByPatientIdOrderBySlotTimeDesc(Long patientId);
 
-        List<Appointment> findByDoctorIdOrderByDateTimeAsc(Long doctorId);
+        List<Appointment> findByDoctorIdOrderBySlotTimeAsc(Long doctorId);
 
-        long countByDateTimeBetween(LocalDateTime start, LocalDateTime end);
+        List<Appointment> findByDoctorIdAndSlotTimeAfterOrderBySlotTimeAsc(Long doctorId, LocalDateTime slotTime);
+
+        List<Appointment> findByDoctorId(Long doctorId);
+
+        long countBySlotTimeBetween(LocalDateTime start, LocalDateTime end);
+
+        List<Appointment> findBySlotTimeBetween(LocalDateTime start, LocalDateTime end);
 
         long countByStatus(AppointmentStatus status);
+
+        List<Appointment> findByStatus(AppointmentStatus status);
 }

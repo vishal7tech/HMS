@@ -12,8 +12,11 @@ const Navigation = () => {
   };
 
   const getUserRole = () => {
-    const roles = user?.roles || [user?.role] || [];
-    return roles[0]?.replace('ROLE_', '') || 'USER';
+    // User has role field from JWT token
+    if (user?.role) {
+      return user.role.replace('ROLE_', '');
+    }
+    return 'USER';
   };
 
   const userRole = getUserRole();
@@ -63,7 +66,7 @@ const Navigation = () => {
             <div className="flex items-center space-x-2">
               <span className="text-sm text-gray-700">Welcome,</span>
               <span className="text-sm font-medium text-gray-900">
-                {user?.name || user?.sub || 'User'}
+                {user?.sub || 'User'}
               </span>
               <span className="px-2 py-1 text-xs font-medium rounded-full bg-blue-100 text-blue-800">
                 {userRole}

@@ -1,0 +1,18 @@
+﻿
+
+id            : 2
+appointmentId : 8
+patientId     : 1
+patientName   : John 
+                Doe
+amount        : 500.00
+status        : PENDING
+invoiceNumber : INV-3B9
+                E4556
+pdfPath       : invoice
+                s\INV-3
+                B9E4556
+                .pdf
+
+
+

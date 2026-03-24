@@ -1,0 +1,184 @@
+[INFO] Scanning for projects...
+[INFO] 
+[INFO] -----------------------< com.vishal:hms-backend >-----------------------
+[INFO] Building hms-backend 0.0.1-SNAPSHOT
+[INFO]   from pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- clean:3.4.1:clean (default-clean) @ hms-backend ---
+[INFO] Deleting C:\Users\ACER\OneDrive\Desktop\HMS\HMS\backend\target
+[INFO] 
+[INFO] --- resources:3.3.1:resources (default-resources) @ hms-backend ---
+[INFO] Copying 1 resource from src\main\resources to target\classes
+[INFO] Copying 3 resources from src\main\resources to target\classes
+[INFO] 
+[INFO] --- compiler:3.14.1:compile (default-compile) @ hms-backend ---
+[INFO] Recompiling the module because of changed source code.
+[INFO] Compiling 66 source files with javac [debug parameters release 17] to target\classes
+[WARNING] /C:/Users/ACER/OneDrive/Desktop/HMS/HMS/backend/src/main/java/com/vishal/hms_backend/entity/RefreshToken.java:[39,21] @Builder will ignore the initializing expression entirely. If you want the initializing expression to serve as default, add @Builder.Default. If it is not supposed to be settable during building, make the field final.
+[INFO] /C:/Users/ACER/OneDrive/Desktop/HMS/HMS/backend/src/main/java/com/vishal/hms_backend/config/SecurityConfig.java: Some input files use or override a deprecated API.
+[INFO] /C:/Users/ACER/OneDrive/Desktop/HMS/HMS/backend/src/main/java/com/vishal/hms_backend/config/SecurityConfig.java: Recompile with -Xlint:deprecation for details.
+[INFO] 
+[INFO] --- resources:3.3.1:testResources (default-testResources) @ hms-backend ---
+[INFO] skip non existing resourceDirectory C:\Users\ACER\OneDrive\Desktop\HMS\HMS\backend\src\test\resources
+[INFO] 
+[INFO] --- compiler:3.14.1:testCompile (default-testCompile) @ hms-backend ---
+[INFO] Recompiling the module because of changed dependency.
+[INFO] Compiling 8 source files with javac [debug parameters release 17] to target\test-classes
+[INFO] -------------------------------------------------------------
+[ERROR] COMPILATION ERROR : 
+[INFO] -------------------------------------------------------------
+[ERROR] /C:/Users/ACER/OneDrive/Desktop/HMS/HMS/backend/src/test/java/com/vishal/hms_backend/integration/AppointmentControllerIT.java:[10,41] cannot find symbol
+  symbol:   class DoctorRepository
+  location: package com.vishal.hms_backend.repository
+[ERROR] /C:/Users/ACER/OneDrive/Desktop/HMS/HMS/backend/src/test/java/com/vishal/hms_backend/integration/AppointmentControllerIT.java:[11,41] cannot find symbol
+  symbol:   class PatientRepository
+  location: package com.vishal.hms_backend.repository
+[ERROR] /C:/Users/ACER/OneDrive/Desktop/HMS/HMS/backend/src/test/java/com/vishal/hms_backend/integration/AppointmentControllerIT.java:[44,13] cannot find symbol
+  symbol:   class PatientRepository
+  location: class com.vishal.hms_backend.integration.AppointmentControllerIT
+[ERROR] /C:/Users/ACER/OneDrive/Desktop/HMS/HMS/backend/src/test/java/com/vishal/hms_backend/integration/AppointmentControllerIT.java:[47,13] cannot find symbol
+  symbol:   class DoctorRepository
+  location: class com.vishal.hms_backend.integration.AppointmentControllerIT
+[ERROR] /C:/Users/ACER/OneDrive/Desktop/HMS/HMS/backend/src/test/java/com/vishal/hms_backend/integration/BillingControllerIT.java:[6,34] cannot find symbol
+  symbol:   class BillingRequestDTO
+  location: package com.vishal.hms_backend.dto
+[ERROR] /C:/Users/ACER/OneDrive/Desktop/HMS/HMS/backend/src/test/java/com/vishal/hms_backend/integration/BillingControllerIT.java:[9,41] cannot find symbol
+  symbol:   class BillingRepository
+  location: package com.vishal.hms_backend.repository
+[ERROR] /C:/Users/ACER/OneDrive/Desktop/HMS/HMS/backend/src/test/java/com/vishal/hms_backend/integration/BillingControllerIT.java:[42,13] cannot find symbol
+  symbol:   class BillingRepository
+  location: class com.vishal.hms_backend.integration.BillingControllerIT
+[ERROR] /C:/Users/ACER/OneDrive/Desktop/HMS/HMS/backend/src/test/java/com/vishal/hms_backend/integration/PatientControllerSecurityIT.java:[9,41] cannot find symbol
+  symbol:   class PatientRepository
+  location: package com.vishal.hms_backend.repository
+[ERROR] /C:/Users/ACER/OneDrive/Desktop/HMS/HMS/backend/src/test/java/com/vishal/hms_backend/integration/PatientControllerSecurityIT.java:[40,13] cannot find symbol
+  symbol:   class PatientRepository
+  location: class com.vishal.hms_backend.integration.PatientControllerSecurityIT
+[ERROR] /C:/Users/ACER/OneDrive/Desktop/HMS/HMS/backend/src/test/java/com/vishal/hms_backend/service/AppointmentServiceTest.java:[7,37] cannot find symbol
+  symbol:   class Doctor
+  location: package com.vishal.hms_backend.entity
+[ERROR] /C:/Users/ACER/OneDrive/Desktop/HMS/HMS/backend/src/test/java/com/vishal/hms_backend/service/AppointmentServiceTest.java:[8,37] cannot find symbol
+  symbol:   class Patient
+  location: package com.vishal.hms_backend.entity
+[ERROR] /C:/Users/ACER/OneDrive/Desktop/HMS/HMS/backend/src/test/java/com/vishal/hms_backend/service/AppointmentServiceTest.java:[11,41] cannot find symbol
+  symbol:   class DoctorRepository
+  location: package com.vishal.hms_backend.repository
+[ERROR] /C:/Users/ACER/OneDrive/Desktop/HMS/HMS/backend/src/test/java/com/vishal/hms_backend/service/AppointmentServiceTest.java:[12,41] cannot find symbol
+  symbol:   class PatientRepository
+  location: package com.vishal.hms_backend.repository
+[ERROR] /C:/Users/ACER/OneDrive/Desktop/HMS/HMS/backend/src/test/java/com/vishal/hms_backend/service/AppointmentServiceTest.java:[35,13] cannot find symbol
+  symbol:   class PatientRepository
+  location: class com.vishal.hms_backend.service.AppointmentServiceTest
+[ERROR] /C:/Users/ACER/OneDrive/Desktop/HMS/HMS/backend/src/test/java/com/vishal/hms_backend/service/AppointmentServiceTest.java:[38,13] cannot find symbol
+  symbol:   class DoctorRepository
+  location: class com.vishal.hms_backend.service.AppointmentServiceTest
+[ERROR] /C:/Users/ACER/OneDrive/Desktop/HMS/HMS/backend/src/test/java/com/vishal/hms_backend/service/AppointmentServiceTest.java:[46,13] cannot find symbol
+  symbol:   class Patient
+  location: class com.vishal.hms_backend.service.AppointmentServiceTest
+[ERROR] /C:/Users/ACER/OneDrive/Desktop/HMS/HMS/backend/src/test/java/com/vishal/hms_backend/service/AppointmentServiceTest.java:[47,13] cannot find symbol
+  symbol:   class Doctor
+  location: class com.vishal.hms_backend.service.AppointmentServiceTest
+[ERROR] /C:/Users/ACER/OneDrive/Desktop/HMS/HMS/backend/src/test/java/com/vishal/hms_backend/service/PatientServiceTest.java:[5,37] cannot find symbol
+  symbol:   class Patient
+  location: package com.vishal.hms_backend.entity
+[ERROR] /C:/Users/ACER/OneDrive/Desktop/HMS/HMS/backend/src/test/java/com/vishal/hms_backend/service/PatientServiceTest.java:[6,37] cannot find symbol
+  symbol:   class PatientMapper
+  location: package com.vishal.hms_backend.mapper
+[ERROR] /C:/Users/ACER/OneDrive/Desktop/HMS/HMS/backend/src/test/java/com/vishal/hms_backend/service/PatientServiceTest.java:[7,41] cannot find symbol
+  symbol:   class PatientRepository
+  location: package com.vishal.hms_backend.repository
+[ERROR] /C:/Users/ACER/OneDrive/Desktop/HMS/HMS/backend/src/test/java/com/vishal/hms_backend/service/PatientServiceTest.java:[27,13] cannot find symbol
+  symbol:   class PatientRepository
+  location: class com.vishal.hms_backend.service.PatientServiceTest
+[ERROR] /C:/Users/ACER/OneDrive/Desktop/HMS/HMS/backend/src/test/java/com/vishal/hms_backend/service/PatientServiceTest.java:[30,13] cannot find symbol
+  symbol:   class PatientMapper
+  location: class com.vishal.hms_backend.service.PatientServiceTest
+[ERROR] /C:/Users/ACER/OneDrive/Desktop/HMS/HMS/backend/src/test/java/com/vishal/hms_backend/service/PatientServiceTest.java:[35,13] cannot find symbol
+  symbol:   class Patient
+  location: class com.vishal.hms_backend.service.PatientServiceTest
+[INFO] 23 errors 
+[INFO] -------------------------------------------------------------
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD FAILURE
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  11.364 s
+[INFO] Finished at: 2026-02-27T23:35:05+05:30
+[INFO] ------------------------------------------------------------------------
+[ERROR] Failed to execute goal org.apache.maven.plugins:maven-compiler-plugin:3.14.1:testCompile (default-testCompile) on project hms-backend: Compilation failure: Compilation failure: 
+[ERROR] /C:/Users/ACER/OneDrive/Desktop/HMS/HMS/backend/src/test/java/com/vishal/hms_backend/integration/AppointmentControllerIT.java:[10,41] cannot find symbol
+[ERROR]   symbol:   class DoctorRepository
+[ERROR]   location: package com.vishal.hms_backend.repository
+[ERROR] /C:/Users/ACER/OneDrive/Desktop/HMS/HMS/backend/src/test/java/com/vishal/hms_backend/integration/AppointmentControllerIT.java:[11,41] cannot find symbol
+[ERROR]   symbol:   class PatientRepository
+[ERROR]   location: package com.vishal.hms_backend.repository
+[ERROR] /C:/Users/ACER/OneDrive/Desktop/HMS/HMS/backend/src/test/java/com/vishal/hms_backend/integration/AppointmentControllerIT.java:[44,13] cannot find symbol
+[ERROR]   symbol:   class PatientRepository
+[ERROR]   location: class com.vishal.hms_backend.integration.AppointmentControllerIT
+[ERROR] /C:/Users/ACER/OneDrive/Desktop/HMS/HMS/backend/src/test/java/com/vishal/hms_backend/integration/AppointmentControllerIT.java:[47,13] cannot find symbol
+[ERROR]   symbol:   class DoctorRepository
+[ERROR]   location: class com.vishal.hms_backend.integration.AppointmentControllerIT
+[ERROR] /C:/Users/ACER/OneDrive/Desktop/HMS/HMS/backend/src/test/java/com/vishal/hms_backend/integration/BillingControllerIT.java:[6,34] cannot find symbol
+[ERROR]   symbol:   class BillingRequestDTO
+[ERROR]   location: package com.vishal.hms_backend.dto
+[ERROR] /C:/Users/ACER/OneDrive/Desktop/HMS/HMS/backend/src/test/java/com/vishal/hms_backend/integration/BillingControllerIT.java:[9,41] cannot find symbol
+[ERROR]   symbol:   class BillingRepository
+[ERROR]   location: package com.vishal.hms_backend.repository
+[ERROR] /C:/Users/ACER/OneDrive/Desktop/HMS/HMS/backend/src/test/java/com/vishal/hms_backend/integration/BillingControllerIT.java:[42,13] cannot find symbol
+[ERROR]   symbol:   class BillingRepository
+[ERROR]   location: class com.vishal.hms_backend.integration.BillingControllerIT
+[ERROR] /C:/Users/ACER/OneDrive/Desktop/HMS/HMS/backend/src/test/java/com/vishal/hms_backend/integration/PatientControllerSecurityIT.java:[9,41] cannot find symbol
+[ERROR]   symbol:   class PatientRepository
+[ERROR]   location: package com.vishal.hms_backend.repository
+[ERROR] /C:/Users/ACER/OneDrive/Desktop/HMS/HMS/backend/src/test/java/com/vishal/hms_backend/integration/PatientControllerSecurityIT.java:[40,13] cannot find symbol
+[ERROR]   symbol:   class PatientRepository
+[ERROR]   location: class com.vishal.hms_backend.integration.PatientControllerSecurityIT
+[ERROR] /C:/Users/ACER/OneDrive/Desktop/HMS/HMS/backend/src/test/java/com/vishal/hms_backend/service/AppointmentServiceTest.java:[7,37] cannot find symbol
+[ERROR]   symbol:   class Doctor
+[ERROR]   location: package com.vishal.hms_backend.entity
+[ERROR] /C:/Users/ACER/OneDrive/Desktop/HMS/HMS/backend/src/test/java/com/vishal/hms_backend/service/AppointmentServiceTest.java:[8,37] cannot find symbol
+[ERROR]   symbol:   class Patient
+[ERROR]   location: package com.vishal.hms_backend.entity
+[ERROR] /C:/Users/ACER/OneDrive/Desktop/HMS/HMS/backend/src/test/java/com/vishal/hms_backend/service/AppointmentServiceTest.java:[11,41] cannot find symbol
+[ERROR]   symbol:   class DoctorRepository
+[ERROR]   location: package com.vishal.hms_backend.repository
+[ERROR] /C:/Users/ACER/OneDrive/Desktop/HMS/HMS/backend/src/test/java/com/vishal/hms_backend/service/AppointmentServiceTest.java:[12,41] cannot find symbol
+[ERROR]   symbol:   class PatientRepository
+[ERROR]   location: package com.vishal.hms_backend.repository
+[ERROR] /C:/Users/ACER/OneDrive/Desktop/HMS/HMS/backend/src/test/java/com/vishal/hms_backend/service/AppointmentServiceTest.java:[35,13] cannot find symbol
+[ERROR]   symbol:   class PatientRepository
+[ERROR]   location: class com.vishal.hms_backend.service.AppointmentServiceTest
+[ERROR] /C:/Users/ACER/OneDrive/Desktop/HMS/HMS/backend/src/test/java/com/vishal/hms_backend/service/AppointmentServiceTest.java:[38,13] cannot find symbol
+[ERROR]   symbol:   class DoctorRepository
+[ERROR]   location: class com.vishal.hms_backend.service.AppointmentServiceTest
+[ERROR] /C:/Users/ACER/OneDrive/Desktop/HMS/HMS/backend/src/test/java/com/vishal/hms_backend/service/AppointmentServiceTest.java:[46,13] cannot find symbol
+[ERROR]   symbol:   class Patient
+[ERROR]   location: class com.vishal.hms_backend.service.AppointmentServiceTest
+[ERROR] /C:/Users/ACER/OneDrive/Desktop/HMS/HMS/backend/src/test/java/com/vishal/hms_backend/service/AppointmentServiceTest.java:[47,13] cannot find symbol
+[ERROR]   symbol:   class Doctor
+[ERROR]   location: class com.vishal.hms_backend.service.AppointmentServiceTest
+[ERROR] /C:/Users/ACER/OneDrive/Desktop/HMS/HMS/backend/src/test/java/com/vishal/hms_backend/service/PatientServiceTest.java:[5,37] cannot find symbol
+[ERROR]   symbol:   class Patient
+[ERROR]   location: package com.vishal.hms_backend.entity
+[ERROR] /C:/Users/ACER/OneDrive/Desktop/HMS/HMS/backend/src/test/java/com/vishal/hms_backend/service/PatientServiceTest.java:[6,37] cannot find symbol
+[ERROR]   symbol:   class PatientMapper
+[ERROR]   location: package com.vishal.hms_backend.mapper
+[ERROR] /C:/Users/ACER/OneDrive/Desktop/HMS/HMS/backend/src/test/java/com/vishal/hms_backend/service/PatientServiceTest.java:[7,41] cannot find symbol
+[ERROR]   symbol:   class PatientRepository
+[ERROR]   location: package com.vishal.hms_backend.repository
+[ERROR] /C:/Users/ACER/OneDrive/Desktop/HMS/HMS/backend/src/test/java/com/vishal/hms_backend/service/PatientServiceTest.java:[27,13] cannot find symbol
+[ERROR]   symbol:   class PatientRepository
+[ERROR]   location: class com.vishal.hms_backend.service.PatientServiceTest
+[ERROR] /C:/Users/ACER/OneDrive/Desktop/HMS/HMS/backend/src/test/java/com/vishal/hms_backend/service/PatientServiceTest.java:[30,13] cannot find symbol
+[ERROR]   symbol:   class PatientMapper
+[ERROR]   location: class com.vishal.hms_backend.service.PatientServiceTest
+[ERROR] /C:/Users/ACER/OneDrive/Desktop/HMS/HMS/backend/src/test/java/com/vishal/hms_backend/service/PatientServiceTest.java:[35,13] cannot find symbol
+[ERROR]   symbol:   class Patient
+[ERROR]   location: class com.vishal.hms_backend.service.PatientServiceTest
+[ERROR] -> [Help 1]
+[ERROR] 
+[ERROR] To see the full stack trace of the errors, re-run Maven with the -e switch.
+[ERROR] Re-run Maven using the -X switch to enable full debug logging.
+[ERROR] 
+[ERROR] For more information about the errors and possible solutions, please read the following articles:
+[ERROR] [Help 1] http://cwiki.apache.org/confluence/display/MAVEN/MojoFailureException

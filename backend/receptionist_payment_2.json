@@ -1,0 +1,12 @@
+﻿
+
+id            : 1
+invoiceId     : 2
+amountPaid    : 500
+method        : CASH
+transactionId : CASH-TX
+                N-001
+status        : PAID
+
+
+

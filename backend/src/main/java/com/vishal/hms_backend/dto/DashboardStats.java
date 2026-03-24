@@ -9,11 +9,12 @@ import lombok.*;
 public class DashboardStats {
     private long totalPatients;
     private long totalDoctors;
-    private long appointmentsToday;
-    private long appointmentsInPeriod;
-    private java.math.BigDecimal totalRevenue;
+    private long totalStaff;
+    private long todayAppointments;
+    private long totalAppointments;
+    private java.math.BigDecimal monthlyRevenue;
+    private java.math.BigDecimal outstandingPayments;
     private long completedAppointments;
     private long cancelledAppointments;
-    private long pendingBills;
-    private long paidBills;
+    private long pendingInvoicesCount;
 }

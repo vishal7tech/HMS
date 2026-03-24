@@ -36,8 +36,8 @@ public class JwtUtil {
                 .expiration(new Date(System.currentTimeMillis() + expiryMs))
                 .signWith(key);
 
-        if (user.getDoctorId() != null) {
-            builder.claim("doctorId", user.getDoctorId());
+        if (user.getDoctorProfile() != null) {
+            builder.claim("doctorId", user.getDoctorProfile().getId());
         }
 
         return builder.compact();

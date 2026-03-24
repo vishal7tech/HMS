@@ -1,0 +1,32 @@
+﻿[
+    {
+        "id":  1,
+        "userId":  4,
+        "username":  "patient",
+        "name":  "John Doe",
+        "email":  "patient@hms.com",
+        "contactNumber":  "+0987654321",
+        "address":  "123 Main St, Springfield",
+        "emergencyContact":  null,
+        "bloodGroup":  "O+",
+        "allergies":  null,
+        "dateOfBirth":  "1990-05-20",
+        "gender":  "Male",
+        "medicalHistory":  "None"
+    },
+    {
+        "id":  2,
+        "userId":  11,
+        "username":  "john_doe",
+        "name":  "John Doe",
+        "email":  "john@example.com",
+        "contactNumber":  "+1234567890",
+        "address":  "123 Main St",
+        "emergencyContact":  null,
+        "bloodGroup":  null,
+        "allergies":  null,
+        "dateOfBirth":  "1990-01-01",
+        "gender":  "MALE",
+        "medicalHistory":  null
+    }
+]

@@ -15,6 +15,6 @@ public class SecurityService {
         }
 
         User user = (User) auth.getPrincipal();
-        return user.getDoctorId() != null && user.getDoctorId().equals(doctorId);
+        return user.getDoctorProfile() != null && user.getDoctorProfile().getId().equals(doctorId);
     }
 }

@@ -17,13 +17,26 @@ export default function ProtectedRoute({ children, requiredRoles = [] }: Protect
 
     // Check role-based access if roles are specified
     if (requiredRoles.length > 0) {
-        const userRoles = user?.roles || [user?.role] || [];
-        const hasRequiredRole = requiredRoles.some(role => 
-            userRoles.includes(role) || userRoles.includes('ROLE_' + role)
-        );
+        const userRole = user?.role?.replace('ROLE_', '') || 'USER';
+        const hasRequiredRole = requiredRoles.includes(userRole);
         
         if (!hasRequiredRole) {
-            return <Navigate to="/dashboard" replace />;
+            // Redirect to appropriate dashboard based on user role
+            const userRole = user?.role?.replace('ROLE_', '') || 'USER';
+            switch (userRole) {
+                case 'BILLING':
+                    return <Navigate to="/billing/dashboard" replace />;
+                case 'ADMIN':
+                    return <Navigate to="/admin-dashboard" replace />;
+                case 'DOCTOR':
+                    return <Navigate to="/doctor-dashboard" replace />;
+                case 'RECEPTIONIST':
+                    return <Navigate to="/dashboard" replace />;
+                case 'PATIENT':
+                    return <Navigate to="/patient-dashboard" replace />;
+                default:
+                    return <Navigate to="/login" replace />;
+            }
         }
     }
 
