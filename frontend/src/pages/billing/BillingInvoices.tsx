@@ -25,7 +25,7 @@ interface Invoice {
   tax: number;
   totalAmount: number;
   paymentMethod: 'CASH' | 'CARD' | 'UPI' | 'INSURANCE';
-  status: 'PENDING' | 'PAID' | 'PARTIAL' | 'OVERDUE' | 'CANCELLED';
+  status: 'PENDING' | 'PAID' | 'PARTIAL' | 'REFUNDED';
   createdAt: string;
   dueDate: string;
   paidAt?: string;
@@ -130,12 +130,17 @@ const BillingInvoices = () => {
 
   const handleUpdateStatus = async (id: number, newStatus: string) => {
     try {
-      await api.put(`/invoices/${id}/payment-status`, { status: newStatus });
+      console.log('Updating invoice status:', { id, newStatus });
+      const response = await api.put(`/invoices/${id}/payment-status`, { paymentStatus: newStatus });
+      console.log('Status update response:', response.data);
       toast.success('Invoice status updated');
       fetchInvoicesData();
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to update status:', error);
-      toast.error('Failed to update status');
+      console.error('Error response:', error.response?.data);
+      console.error('Error status:', error.response?.status);
+      const errorMessage = error.response?.data?.message || error.message || 'Failed to update status';
+      toast.error(errorMessage);
     }
   };
 
@@ -144,8 +149,7 @@ const BillingInvoices = () => {
       case 'PENDING': return 'bg-yellow-100 text-yellow-800 border-yellow-200';
       case 'PAID': return 'bg-green-100 text-green-800 border-green-200';
       case 'PARTIAL': return 'bg-blue-100 text-blue-800 border-blue-200';
-      case 'OVERDUE': return 'bg-red-100 text-red-800 border-red-200';
-      case 'CANCELLED': return 'bg-gray-100 text-gray-800 border-gray-200';
+      case 'REFUNDED': return 'bg-red-100 text-red-800 border-red-200';
       default: return 'bg-gray-100 text-gray-800 border-gray-200';
     }
   };
@@ -238,8 +242,7 @@ const BillingInvoices = () => {
             <option value="PENDING">Pending</option>
             <option value="PAID">Paid</option>
             <option value="PARTIAL">Partial</option>
-            <option value="OVERDUE">Overdue</option>
-            <option value="CANCELLED">Cancelled</option>
+            <option value="REFUNDED">Refunded</option>
           </select>
           <select
             value={filterPaymentMethod}
@@ -310,8 +313,7 @@ const BillingInvoices = () => {
                       <option value="PENDING">PENDING</option>
                       <option value="PAID">PAID</option>
                       <option value="PARTIAL">PARTIAL</option>
-                      <option value="OVERDUE">OVERDUE</option>
-                      <option value="CANCELLED">CANCELLED</option>
+                      <option value="REFUNDED">REFUNDED</option>
                     </select>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
