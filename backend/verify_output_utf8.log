@@ -1,0 +1,22 @@
+﻿--- HMS Core Verification ---
+Registering users...
+Auth successful.
+
+Creating Doctor...
+Doctor Created ID: 13
+
+Creating Patient...
+Patient Created ID: 52
+
+Booking Appointment...
+Appointment Booked ID: 12
+
+Testing Conflict (Same time, same doctor)...
+FAILED: Expected 409, got The remote server returned an error: (403) Forbidden.
+
+Checking Dashboard Stats...
+Total Patients: 15
+Total Doctors: 13
+Appointments Today: 0
+
+--- VERIFICATION COMPLETE ---

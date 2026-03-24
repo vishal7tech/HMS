@@ -34,6 +34,8 @@ public class User implements UserDetails {
     @Column(nullable = false)
     private Role role;
 
+    private Long doctorId; // Link to Doctor entity for DOCTOR role
+
     // ────────────────────────────────────────────────
     // UserDetails interface methods (required by Spring Security)
     // ────────────────────────────────────────────────

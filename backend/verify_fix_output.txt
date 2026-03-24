@@ -1,0 +1,39 @@
+﻿--- 1. Getting Tokens ---
+-ForeColor
+Cyan
+Got Admin and Doctor tokens.
+-ForeColor
+Green
+--- 2. Testing ADMIN Access (Should SUCCEED) ---
+-ForeColor
+Cyan
+
+
+id             : 4
+name           : Test
+                  Pat
+                 ient
+                  Upd
+                 ated
+age            : 31
+email          : test
+                 .pat
+                 ient
+                 .upd
+                 ated
+                 @exa
+                 mple
+                 .com
+phoneNumber    : +198
+                 7654
+                 321
+medicalHistory : Upda
+                 ted 
+                 by A
+                 dmin
+
+SUCCESS: Admin update worked as expected.
+-ForeColor
+Green
+
+

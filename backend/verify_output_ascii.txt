@@ -1,0 +1,301 @@
+Invoke-RestMethod : 
+Username already 
+exists
+At C:\Users\ACER\OneD
+rive\Desktop\HMS\HMS\
+backend\verify_fixes.
+ps1:10 char:1
++ Invoke-RestMethod 
+-Uri "$baseUrl/auth/r
+egister" -Method 
+Post -Body $a ...
++ ~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~
+    + CategoryInfo   
+           : Invali  
+  dOperation: (Sys   
+ tem.Net.HttpWebR    
+equest:HttpWebRe    
+quest) [Invoke-R    
+estMethod], WebE    
+xception
+    + FullyQualified 
+   ErrorId : WebCmd  
+  letWebResponseEx   
+ ception,Microsof    
+t.PowerShell.Com    
+mands.InvokeRest    
+MethodCommand
+Admin Token obtained
+Invoke-RestMethod : 
+The remote server 
+returned an error: 
+(403) Forbidden.
+At C:\Users\ACER\OneD
+rive\Desktop\HMS\HMS\
+backend\verify_fixes.
+ps1:32 char:14
++ ... newDoctor = 
+Invoke-RestMethod 
+-Uri 
+"$baseUrl/doctors" 
+-Method Post -H ...
++                 ~~~
+~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~
+    + CategoryInfo   
+           : Invali  
+  dOperation: (Sys   
+ tem.Net.HttpWebR    
+equest:HttpWebRe    
+quest) [Invoke-R    
+estMethod], WebE    
+xception
+    + FullyQualified 
+   ErrorId : WebCmd  
+  letWebResponseEx   
+ ception,Microsof    
+t.PowerShell.Com    
+mands.InvokeRest    
+MethodCommand
+ 
+Doctor Created with Availability: 
+Invoke-RestMethod : 
+The remote server 
+returned an error: 
+(403) Forbidden.
+At C:\Users\ACER\OneD
+rive\Desktop\HMS\HMS\
+backend\verify_fixes.
+ps1:44 char:15
++ ... ewPatient = 
+Invoke-RestMethod 
+-Uri 
+"$baseUrl/patients" 
+-Method Post - ...
++                 ~~~
+~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~
+    + CategoryInfo   
+           : Invali  
+  dOperation: (Sys   
+ tem.Net.HttpWebR    
+equest:HttpWebRe    
+quest) [Invoke-R    
+estMethod], WebE    
+xception
+    + FullyQualified 
+   ErrorId : WebCmd  
+  letWebResponseEx   
+ ception,Microsof    
+t.PowerShell.Com    
+mands.InvokeRest    
+MethodCommand
+ 
+Patient Created: 
+Invoke-RestMethod : 
+The remote server 
+returned an error: 
+(403) Forbidden.
+At C:\Users\ACER\OneD
+rive\Desktop\HMS\HMS\
+backend\verify_fixes.
+ps1:56 char:14
++ ... bookedApp = 
+Invoke-RestMethod 
+-Uri "$baseUrl/appoin
+tments" -Method Po 
+...
++                 ~~~
+~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~
+    + CategoryInfo   
+           : Invali  
+  dOperation: (Sys   
+ tem.Net.HttpWebR    
+equest:HttpWebRe    
+quest) [Invoke-R    
+estMethod], WebE    
+xception
+    + FullyQualified 
+   ErrorId : WebCmd  
+  letWebResponseEx   
+ ception,Microsof    
+t.PowerShell.Com    
+mands.InvokeRest    
+MethodCommand
+ 
+Appointment Booked:  at 
+Invoke-RestMethod : 
+The remote server 
+returned an error: 
+(400) Bad Request.
+At C:\Users\ACER\OneD
+rive\Desktop\HMS\HMS\
+backend\verify_fixes.
+ps1:62 char:19
++ ... eduledApp = 
+Invoke-RestMethod 
+-Uri $rescheduleUrl 
+-Method Put -Header 
+...
++                 ~~~
+~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~
+    + CategoryInfo   
+           : Invali  
+  dOperation: (Sys   
+ tem.Net.HttpWebR    
+equest:HttpWebRe    
+quest) [Invoke-R    
+estMethod], WebE    
+xception
+    + FullyQualified 
+   ErrorId : WebCmd  
+  letWebResponseEx   
+ ception,Microsof    
+t.PowerShell.Com    
+mands.InvokeRest    
+MethodCommand
+ 
+Appointment Rescheduled to: 
+Invoke-RestMethod : 
+The remote server 
+returned an error: 
+(400) Bad Request.
+At C:\Users\ACER\OneD
+rive\Desktop\HMS\HMS\
+backend\verify_fixes.
+ps1:66 char:1
++ Invoke-RestMethod 
+-Uri "$baseUrl/appoin
+tments/$($bookedApp.i
+d)/cancel ...
++ ~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~
+    + CategoryInfo   
+           : Invali  
+  dOperation: (Sys   
+ tem.Net.HttpWebR    
+equest:HttpWebRe    
+quest) [Invoke-R    
+estMethod], WebE    
+xception
+    + FullyQualified 
+   ErrorId : WebCmd  
+  letWebResponseEx   
+ ception,Microsof    
+t.PowerShell.Com    
+mands.InvokeRest    
+MethodCommand
+ 
+Appointment Cancelled
+Invoke-RestMethod : 
+The remote server 
+returned an error: 
+(403) Forbidden.
+At C:\Users\ACER\OneD
+rive\Desktop\HMS\HMS\
+backend\verify_fixes.
+ps1:78 char:15
++ ... ookedApp2 = 
+Invoke-RestMethod 
+-Uri "$baseUrl/appoin
+tments" -Method Po 
+...
++                 ~~~
+~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~
+    + CategoryInfo   
+           : Invali  
+  dOperation: (Sys   
+ tem.Net.HttpWebR    
+equest:HttpWebRe    
+quest) [Invoke-R    
+estMethod], WebE    
+xception
+    + FullyQualified 
+   ErrorId : WebCmd  
+  letWebResponseEx   
+ ception,Microsof    
+t.PowerShell.Com    
+mands.InvokeRest    
+MethodCommand
+ 
+Invoke-RestMethod : 
+The remote server 
+returned an error: 
+(403) Forbidden.
+At C:\Users\ACER\OneD
+rive\Desktop\HMS\HMS\
+backend\verify_fixes.
+ps1:88 char:12
++ $newBill = 
+Invoke-RestMethod 
+-Uri 
+"$baseUrl/billings" 
+-Method Post -H ...
++            ~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~
+    + CategoryInfo   
+           : Invali  
+  dOperation: (Sys   
+ tem.Net.HttpWebR    
+equest:HttpWebRe    
+quest) [Invoke-R    
+estMethod], WebE    
+xception
+    + FullyQualified 
+   ErrorId : WebCmd  
+  letWebResponseEx   
+ ception,Microsof    
+t.PowerShell.Com    
+mands.InvokeRest    
+MethodCommand
+ 
+Bill Created with Amount: 
+Invoke-RestMethod : 
+The remote server 
+returned an error: 
+(403) Forbidden.
+At C:\Users\ACER\OneD
+rive\Desktop\HMS\HMS\
+backend\verify_fixes.
+ps1:92 char:10
++ $stats = 
+Invoke-RestMethod 
+-Uri "$baseUrl/dashbo
+ard/stats" -Method 
+Ge ...
++          ~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~
+    + CategoryInfo   
+           : Invali  
+  dOperation: (Sys   
+ tem.Net.HttpWebR    
+equest:HttpWebRe    
+quest) [Invoke-R    
+estMethod], WebE    
+xception
+    + FullyQualified 
+   ErrorId : WebCmd  
+  letWebResponseEx   
+ ception,Microsof    
+t.PowerShell.Com    
+mands.InvokeRest    
+MethodCommand
+ 
+Dashboard Revenue: 

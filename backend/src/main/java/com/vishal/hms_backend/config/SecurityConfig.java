@@ -1,6 +1,5 @@
 package com.vishal.hms_backend.config;
 
-import com.vishal.hms_backend.filter.JwtAuthenticationFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -14,23 +13,23 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 
 @Configuration
+@EnableMethodSecurity
 public class SecurityConfig {
 
-    private final JwtAuthenticationFilter jwtAuthenticationFilter;
+    private final HmsJwtFilter hmsJwtFilter;
     private final UserDetailsService userDetailsService;
 
-    // Constructor injection (recommended over @Autowired field)
-    public SecurityConfig(JwtAuthenticationFilter jwtAuthenticationFilter,
-            UserDetailsService userDetailsService) {
-        this.jwtAuthenticationFilter = jwtAuthenticationFilter;
+    public SecurityConfig(HmsJwtFilter hmsJwtFilter, UserDetailsService userDetailsService) {
+        this.hmsJwtFilter = hmsJwtFilter;
         this.userDetailsService = userDetailsService;
     }
 
     @Bean
     public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder(12); // strength 12 is good balance
+        return new BCryptPasswordEncoder(12);
     }
 
     @Bean
@@ -49,23 +48,18 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                .csrf(csrf -> csrf.disable()) // Disable CSRF for stateless JWT API
-
+                .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/auth/**", "/ping", "/").permitAll() // allow register, login, ping & root
-                        .anyRequest().authenticated() // everything else needs auth
-                )
-
+                        .requestMatchers("/api/auth/**", "/ping", "/", "/error").permitAll()
+                        .requestMatchers(org.springframework.http.HttpMethod.GET, "/api/patients/**", "/api/doctors/**",
+                                "/api/appointments/**")
+                        .hasAnyRole("ADMIN", "RECEPTIONIST", "DOCTOR")
+                        .requestMatchers("/api/patients/**", "/api/doctors/**", "/api/appointments/**",
+                                "/api/billings/**")
+                        .hasAnyRole("ADMIN", "RECEPTIONIST")
+                        .anyRequest().authenticated())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-
-                // Add our JWT filter BEFORE the default form login filter
-                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
-
-        // Optional: enable form login debug if you want (remove later)
-        // .formLogin(withDefaults()) // ← comment out or remove
-
-        // Optional: http basic for testing (comment out later)
-        // .httpBasic(withDefaults());
+                .addFilterBefore(hmsJwtFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }

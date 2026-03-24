@@ -1,6 +1,5 @@
 package com.vishal.hms_backend.util;
 
-import com.vishal.hms_backend.entity.Role;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
@@ -29,14 +28,23 @@ public class JwtUtil {
         this.key = Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
     }
 
-    public String generateToken(String username, Role role) {
-        return Jwts.builder()
-                .subject(username)
-                .claim("role", role.name())
+    public String generateToken(com.vishal.hms_backend.entity.User user) {
+        JwtBuilder builder = Jwts.builder()
+                .subject(user.getUsername())
+                .claim("role", user.getRole().name())
                 .issuedAt(new Date())
                 .expiration(new Date(System.currentTimeMillis() + expiryMs))
-                .signWith(key)
-                .compact();
+                .signWith(key);
+
+        if (user.getDoctorId() != null) {
+            builder.claim("doctorId", user.getDoctorId());
+        }
+
+        return builder.compact();
+    }
+
+    public Long extractDoctorId(String token) {
+        return extractClaim(token, claims -> claims.get("doctorId", Long.class));
     }
 
     private Claims extractAllClaims(String token) {
