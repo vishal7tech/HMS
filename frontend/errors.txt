@@ -1,0 +1,24 @@
+
+> frontend@0.0.0 build
+> tsc -b && vite build
+
+src/components/ErrorBoundary.tsx(2,26): error TS6196: 'ErrorInfo' is declared but never used.
+src/components/SearchAndPagination.tsx(48,9): error TS6133: 'handleFilter' is declared but its value is never read.
+src/components/SearchAndPagination.tsx(56,9): error TS6133: 'handleSort' is declared but its value is never read.
+src/pages/admin/AdminDashboard.tsx(17,9): error TS6198: All destructured elements are unused.
+src/pages/admin/AdminDashboard.tsx(33,43): error TS6133: 'appointmentLoading' is declared but its value is never read.
+src/pages/admin/AdminDashboard.tsx(34,39): error TS6133: 'revenueLoading' is declared but its value is never read.
+src/pages/admin/StaffManagement.tsx(5,18): error TS6133: 'Filter' is declared but its value is never read.
+src/pages/admin/StaffManagement.tsx(5,84): error TS6133: 'Calendar' is declared but its value is never read.
+src/pages/admin/StaffManagement.tsx(5,109): error TS6133: 'MapPin' is declared but its value is never read.
+src/pages/admin/StaffManagement.tsx(5,128): error TS6133: 'Clock' is declared but its value is never read.
+src/pages/admin/StaffManagement.tsx(5,135): error TS6133: 'DollarSign' is declared but its value is never read.
+src/pages/admin/StaffManagement.tsx(59,11): error TS6133: 'getSortedStaffByRole' is declared but its value is never read.
+src/pages/Billing.tsx(14,3): error TS6133: 'Filter' is declared but its value is never read.
+src/pages/Billing.tsx(17,3): error TS6133: 'Edit' is declared but its value is never read.
+src/pages/Billing.tsx(91,10): error TS6133: 'filterDateRange' is declared but its value is never read.
+src/pages/Billing.tsx(91,27): error TS6133: 'setFilterDateRange' is declared but its value is never read.
+src/pages/Billing.tsx(97,9): error TS6133: 'paymentMethods' is declared but its value is never read.
+src/pages/patient/PatientAppointments.tsx(6,12): error TS6133: 'profile' is declared but its value is never read.
+src/test/Login.test.tsx(1,37): error TS6133: 'waitFor' is declared but its value is never read.
+src/utils/apiUtils.ts(94,20): error TS2503: Cannot find namespace 'NodeJS'.

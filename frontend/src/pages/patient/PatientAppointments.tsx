@@ -3,14 +3,13 @@ import api from '../../services/api';
 
 const PatientAppointments = () => {
     const [appointments, setAppointments] = useState<any[]>([]);
-    const [profile, setProfile] = useState<any>(null);
+
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         const fetchData = async () => {
             try {
                 const profileRes = await api.get('/patients/me');
-                setProfile(profileRes.data);
 
                 const apptRes = await api.get(`/appointments/patient/${profileRes.data.id}`);
                 setAppointments(apptRes.data);

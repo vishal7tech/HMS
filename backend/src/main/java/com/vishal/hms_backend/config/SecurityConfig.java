@@ -60,8 +60,8 @@ public class SecurityConfig {
                                                 .hasAnyRole("ADMIN", "RECEPTIONIST", "DOCTOR")
                                                 .requestMatchers("/api/appointments/**")
                                                 .hasAnyRole("ADMIN", "RECEPTIONIST", "DOCTOR", "PATIENT")
-                                                .requestMatchers("/api/invoices/**", "/api/payments/**")
-                                                .hasAnyRole("ADMIN", "RECEPTIONIST")
+                                                .requestMatchers("/api/invoices/**", "/api/payments/**", "/api/billing/**", "/api/revenue/**")
+                                                .hasAnyRole("ADMIN", "RECEPTIONIST", "BILLING")
                                                 .anyRequest().authenticated())
                                 .sessionManagement(session -> session
                                                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS))

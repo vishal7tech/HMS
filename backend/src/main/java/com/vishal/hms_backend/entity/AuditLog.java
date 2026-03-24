@@ -50,7 +50,13 @@ public class AuditLog {
     @Column(name = "user_agent", columnDefinition = "TEXT")
     private String userAgent;
 
+    @Column(name = "entity_name")
+    private String entityName;
+
+    @Column(name = "email")
+    private String email;
+
     public enum AuditAction {
-        INSERT, UPDATE, DELETE, LOGIN, LOGOUT, PASSWORD_CHANGE
+        INSERT, UPDATE, DELETE, LOGIN, LOGOUT, PASSWORD_CHANGE, VIEW
     }
 }

@@ -125,6 +125,28 @@ public class AuthController {
         }
     }
 
+    @PostMapping("/logout")
+    public ResponseEntity<String> logout(HttpServletRequest request) {
+        try {
+            // Get current authenticated user
+            Authentication authentication = org.springframework.security.core.context.SecurityContextHolder.getContext().getAuthentication();
+            if (authentication != null && authentication.getPrincipal() instanceof User) {
+                User user = (User) authentication.getPrincipal();
+                // Log successful logout
+                auditService.logLogout(user.getId(), request);
+            }
+            
+            // Clear security context
+            org.springframework.security.core.context.SecurityContextHolder.clearContext();
+            
+            return ResponseEntity.ok("Logout successful");
+        } catch (Exception e) {
+            log.error("Error during logout", e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Error during logout");
+        }
+    }
+
     @GetMapping("/me")
     public ResponseEntity<?> getCurrentUser(org.springframework.security.core.Authentication authentication) {
         if (authentication == null || !authentication.isAuthenticated()) {

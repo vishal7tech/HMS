@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../../services/api';
 import toast from 'react-hot-toast';
-import { Search, Filter, ChevronLeft, ChevronRight, Eye, Edit, Trash2, User, Mail, Calendar, Shield, Phone, MapPin, Briefcase, Clock, DollarSign, X } from 'lucide-react';
+import { Search, ChevronLeft, ChevronRight, Eye, Edit, Trash2, User, Mail, Shield, Phone, Briefcase, X } from 'lucide-react';
 
 // Define role configuration
 const ROLES = [
@@ -55,17 +55,7 @@ const StaffManagement = () => {
     const [currentPage, setCurrentPage] = useState(1);
     const [itemsPerPage, setItemsPerPage] = useState(10);
 
-    // Function to sort and group staff by role with correct colors
-    const getSortedStaffByRole = () => {
-        const roleOrder = ['DOCTOR', 'RECEPTIONIST', 'BILLING', 'ADMIN'];
-        
-        return roleOrder.map(role => ({
-            role,
-            members: staff
-                .filter(member => member.role === role)
-                .sort((a, b) => a.name.localeCompare(b.name))
-        })).filter(group => group.members.length > 0);
-    };
+
     
     // Get role color for headers and badges
     const getRoleColor = (role: string) => {

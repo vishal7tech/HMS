@@ -1,13 +1,12 @@
 import { useState, useEffect } from 'react';
 import api from '../../services/api';
 import toast from 'react-hot-toast';
-import { 
-  DollarSign, 
-  Clock, 
-  CheckCircle, 
-  AlertTriangle, 
+import {
+  DollarSign,
+  Clock,
+  CheckCircle,
+  AlertTriangle,
   TrendingUp,
-  Calendar,
   Users,
   FileText,
   CreditCard
@@ -59,62 +58,31 @@ const BillingDashboard = () => {
   const fetchDashboardData = async () => {
     try {
       setLoading(true);
-      
-      // Fetch billing stats
-      const statsResponse = await api.get('/billing/stats');
-      setBillingStats(statsResponse.data || {
-        todayBilling: 0,
-        pendingCount: 0,
-        paidAmount: 0,
-        overdueCount: 0,
-        totalRevenue: 0,
-        pendingAmount: 0,
-        overdueAmount: 0,
-        monthlyGrowth: 0,
-        patientCount: 0,
-        invoiceCount: 0
-      });
 
-      // Fetch recent transactions
-      const transactionsResponse = await api.get('/billing/recent-transactions');
-      setRecentTransactions(transactionsResponse.data || []);
-      
+      // Fetch combined dashboard data
+      const dashboardResponse = await api.get('/billing/dashboard');
+      const data = dashboardResponse.data;
+
+      if (data) {
+        setBillingStats(data.stats || {
+          todayBilling: 0,
+          pendingCount: 0,
+          paidAmount: 0,
+          overdueCount: 0,
+          totalRevenue: 0,
+          pendingAmount: 0,
+          overdueAmount: 0,
+          monthlyGrowth: 0,
+          patientCount: 0,
+          invoiceCount: 0
+        });
+        setRecentTransactions(data.recentTransactions || []);
+      }
+
     } catch (error) {
       console.error('Failed to fetch dashboard data:', error);
       toast.error('Failed to load dashboard data');
-      // Set fallback data
-      setBillingStats({
-        todayBilling: 12500,
-        pendingCount: 8,
-        paidAmount: 45000,
-        overdueCount: 3,
-        totalRevenue: 125000,
-        pendingAmount: 3200,
-        overdueAmount: 1800,
-        monthlyGrowth: 12.5,
-        patientCount: 156,
-        invoiceCount: 89
-      });
-      setRecentTransactions([
-        {
-          id: 1,
-          invoiceNumber: 'INV-001',
-          patientName: 'John Doe',
-          amount: 250,
-          status: 'PAID',
-          createdAt: new Date().toISOString(),
-          paymentMethod: 'CARD'
-        },
-        {
-          id: 2,
-          invoiceNumber: 'INV-002',
-          patientName: 'Jane Smith',
-          amount: 180,
-          status: 'PENDING',
-          createdAt: new Date().toISOString(),
-          paymentMethod: 'CASH'
-        }
-      ]);
+      // No fallback dummy data anymore to enforce API correctness
     } finally {
       setLoading(false);
     }
@@ -310,7 +278,7 @@ const BillingDashboard = () => {
                       <div className="text-sm text-gray-900">{transaction.patientName}</div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm font-medium text-gray-900">${transaction.amount.toFixed(2)}</div>
+                      <div className="text-sm font-medium text-gray-900">${(transaction.amount || 0).toFixed(2)}</div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="text-sm text-gray-900">{transaction.paymentMethod}</div>

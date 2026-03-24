@@ -19,4 +19,7 @@ public class BillingStatsDTO {
     private BigDecimal totalRevenue;
     private BigDecimal pendingAmount;
     private BigDecimal overdueAmount;
+    private Long patientCount;
+    private Long invoiceCount;
+    private Double monthlyGrowth;
 }

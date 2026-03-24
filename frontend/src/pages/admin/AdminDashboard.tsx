@@ -14,7 +14,7 @@ import {
 } from '../../components/admin/StaffModals';
 
 const AdminDashboard: React.FC = () => {
-  const { user, logout } = useAuth();
+  const { } = useAuth();
   const [dateFilter, setDateFilter] = useState<'today' | '7d' | '30d'>('today');
   const [refreshing, setRefreshing] = useState(false);
   
@@ -30,8 +30,8 @@ const AdminDashboard: React.FC = () => {
 
   // API hooks
   const { data: stats, loading: statsLoading, refetch: refetchStats } = useDashboardStats(dateFilter);
-  const { data: appointmentData, loading: appointmentLoading, refetch: refetchAppointments } = useAppointmentStats(dateFilter);
-  const { data: revenueData, loading: revenueLoading, refetch: refetchRevenue } = useRevenueData(dateFilter);
+  const { data: appointmentData, refetch: refetchAppointments } = useAppointmentStats(dateFilter);
+  const { data: revenueData, refetch: refetchRevenue } = useRevenueData(dateFilter);
 
   const handleRefresh = async () => {
     setRefreshing(true);

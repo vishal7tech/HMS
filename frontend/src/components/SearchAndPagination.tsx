@@ -45,20 +45,8 @@ export function SearchAndPagination<T>({
     setParams(prev => ({ ...prev, keyword, page: 0 }));
   };
 
-  const handleFilter = (filters: Record<string, any>) => {
-    setParams(prev => ({ ...prev, filters, page: 0 }));
-  };
-
   const handlePageChange = (page: number) => {
     setParams(prev => ({ ...prev, page }));
-  };
-
-  const handleSort = (sortBy: string, sortDirection?: 'asc' | 'desc') => {
-    setParams(prev => ({
-      ...prev,
-      sortBy,
-      sortDirection: sortDirection || (prev.sortDirection === 'asc' ? 'desc' : 'asc'),
-    }));
   };
 
   const debouncedSearch = ApiUtils.createDebouncedSearch();

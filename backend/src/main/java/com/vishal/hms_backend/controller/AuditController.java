@@ -1,5 +1,6 @@
 package com.vishal.hms_backend.controller;
 
+import com.vishal.hms_backend.dto.AuditLogDto;
 import com.vishal.hms_backend.entity.AuditLog;
 import com.vishal.hms_backend.service.AuditService;
 import lombok.RequiredArgsConstructor;
@@ -14,6 +15,9 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/audit")
@@ -25,18 +29,33 @@ public class AuditController {
 
     @GetMapping
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<Page<AuditLog>> getAllAuditLogs(
+    public ResponseEntity<Page<AuditLogDto>> getAllAuditLogs(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "20") int size,
             @RequestParam(defaultValue = "changedAt") String sortBy,
-            @RequestParam(defaultValue = "desc") String sortDir) {
+            @RequestParam(defaultValue = "desc") String sortDir,
+            @RequestParam(required = false) String entityType) {
         
         Sort.Direction direction = sortDir.equalsIgnoreCase("desc") ? 
                 Sort.Direction.DESC : Sort.Direction.ASC;
         Pageable pageable = PageRequest.of(page, size, Sort.by(direction, sortBy));
         
-        Page<AuditLog> auditLogs = auditService.getAuditLogs(pageable);
-        return ResponseEntity.ok(auditLogs);
+        Page<AuditLog> auditLogs;
+        if (entityType != null && !entityType.isEmpty()) {
+            auditLogs = auditService.getAuditLogsByEntityType(entityType, pageable);
+        } else {
+            auditLogs = auditService.getAuditLogs(pageable);
+        }
+        
+        Page<AuditLogDto> auditLogDtos = auditLogs.map(AuditLogDto::fromEntity);
+        return ResponseEntity.ok(auditLogDtos);
+    }
+
+    @GetMapping("/daily-summary")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<Map<String, Long>> getDailyAuditSummary() {
+        Map<String, Long> summary = auditService.getDailyAuditSummary();
+        return ResponseEntity.ok(summary);
     }
 
     @GetMapping("/entity/{entityType}/{entityId}")

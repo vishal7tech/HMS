@@ -20,7 +20,8 @@ INSERT INTO users (id, username, password, role, email, name, enabled, created_a
 (4, 'dr_jones', '$2a$12$LQv3c1yqBWVHxkd0LHAkCOYz6TtxMQJqhN8/LewdBPj6ukx.LFvO6', 'DOCTOR', 'dr.jones@hms.com', 'Dr. Sarah Jones', true, NOW()),
 (5, 'patient1', '$2a$12$LQv3c1yqBWVHxkd0LHAkCOYz6TtxMQJqhN8/LewdBPj6ukx.LFvO6', 'PATIENT', 'john.doe@email.com', 'John Doe', true, NOW()),
 (6, 'patient2', '$2a$12$LQv3c1yqBWVHxkd0LHAkCOYz6TtxMQJqhN8/LewdBPj6ukx.LFvO6', 'PATIENT', 'jane.smith@email.com', 'Jane Smith', true, NOW()),
-(7, 'patient3', '$2a$12$LQv3c1yqBWVHxkd0LHAkCOYz6TtxMQJqhN8/LewdBPj6ukx.LFvO6', 'PATIENT', 'bob.wilson@email.com', 'Bob Wilson', true, NOW());
+(7, 'patient3', '$2a$12$LQv3c1yqBWVHxkd0LHAkCOYz6TtxMQJqhN8/LewdBPj6ukx.LFvO6', 'PATIENT', 'bob.wilson@email.com', 'Bob Wilson', true, NOW()),
+(8, 'vinay', '$2a$12$LQv3c1yqBWVHxkd0LHAkCOYz6TtxMQJqhN8/LewdBPj6ukx.LFvO6', 'ADMIN', 'vinay@hms.com', 'Vinay Kumar', true, NOW());
 
 -- Insert Doctor Profiles
 INSERT INTO doctor_profiles (id, user_id, qualifications, contact_number, created_at) VALUES
@@ -73,11 +74,11 @@ INSERT INTO appointments (id, patient_id, doctor_id, slot_time, end_time, status
 UPDATE availability_slots SET is_available = false WHERE id IN (1, 9, 5);
 
 -- Insert Sample Invoices
-INSERT INTO invoices (id, appointment_id, patient_id, amount, status, invoice_number, created_at) VALUES
-(1, 1, 1, 150.00, 'PAID', 'INV-2024-001', NOW()),
-(2, 2, 2, 200.00, 'PENDING', 'INV-2024-002', NOW()),
-(3, 3, 3, 175.00, 'PARTIAL', 'INV-2024-003', NOW()),
-(4, 4, 1, 150.00, 'PENDING', 'INV-2024-004', NOW());
+INSERT INTO invoices (id, appointment_id, patient_id, amount, tax_amount, total_amount, status, invoice_number, payment_method, due_date, created_at) VALUES
+(1, 1, 1, 150.00, 27.00, 177.00, 'PAID', 'INV-2024-001', 'CARD', DATE_ADD(NOW(), INTERVAL 7 DAY), NOW()),
+(2, 2, 2, 200.00, 36.00, 236.00, 'PENDING', 'INV-2024-002', 'CASH', DATE_ADD(NOW(), INTERVAL 7 DAY), NOW()),
+(3, 3, 3, 175.00, 31.50, 206.50, 'PARTIAL', 'INV-2024-003', 'CASH', DATE_ADD(NOW(), INTERVAL 7 DAY), NOW()),
+(4, 4, 1, 150.00, 27.00, 177.00, 'PENDING', 'INV-2024-004', 'CASH', DATE_ADD(NOW(), INTERVAL 7 DAY), NOW());
 
 -- Insert Sample Payments
 INSERT INTO payments (id, invoice_id, amount_paid, method, transaction_id, status, created_at) VALUES

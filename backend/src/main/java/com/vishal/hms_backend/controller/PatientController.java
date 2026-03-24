@@ -3,6 +3,8 @@ package com.vishal.hms_backend.controller;
 import com.vishal.hms_backend.dto.PatientRequestDTO;
 import com.vishal.hms_backend.dto.PatientResponseDTO;
 import com.vishal.hms_backend.service.PatientService;
+import com.vishal.hms_backend.service.AuditService;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -21,6 +23,7 @@ import java.util.Map;
 public class PatientController {
 
     private final PatientService patientService;
+    private final AuditService auditService;
 
     @GetMapping
     @PreAuthorize("hasAnyRole('ADMIN', 'RECEPTIONIST', 'DOCTOR')")
@@ -43,24 +46,67 @@ public class PatientController {
 
     @PostMapping
     @PreAuthorize("hasAnyRole('ADMIN', 'RECEPTIONIST')")
-    public ResponseEntity<PatientResponseDTO> createPatient(@Valid @RequestBody PatientRequestDTO dto) {
-        PatientResponseDTO created = patientService.createPatient(dto);
-        return new ResponseEntity<>(created, HttpStatus.CREATED);
+    public ResponseEntity<PatientResponseDTO> createPatient(
+            @Valid @RequestBody PatientRequestDTO dto,
+            HttpServletRequest request) {
+        try {
+            User currentUser = (User) org.springframework.security.core.context.SecurityContextHolder
+                    .getContext().getAuthentication().getPrincipal();
+            
+            PatientResponseDTO created = patientService.createPatient(dto);
+            
+            // Log the creation
+            auditService.logCreate("PATIENT", created.getId(), dto, currentUser.getId(), request);
+            
+            return new ResponseEntity<>(created, HttpStatus.CREATED);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().build();
+        }
     }
 
     @PutMapping("/{id}")
     @PreAuthorize("hasAnyRole('ADMIN', 'RECEPTIONIST', 'PATIENT')")
     public ResponseEntity<PatientResponseDTO> updatePatient(
             @PathVariable Long id,
-            @Valid @RequestBody PatientRequestDTO dto) {
-        return ResponseEntity.ok(patientService.updatePatient(id, dto));
+            @Valid @RequestBody PatientRequestDTO dto,
+            HttpServletRequest request) {
+        try {
+            User currentUser = (User) org.springframework.security.core.context.SecurityContextHolder
+                    .getContext().getAuthentication().getPrincipal();
+            
+            // Get old patient data for audit
+            var oldPatient = patientService.getPatientById(id);
+            
+            PatientResponseDTO updated = patientService.updatePatient(id, dto);
+            
+            // Log the update
+            auditService.logUpdate("PATIENT", id, oldPatient, dto, currentUser.getId(), request);
+            
+            return ResponseEntity.ok(updated);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().build();
+        }
     }
 
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<Void> deletePatient(@PathVariable Long id) {
-        patientService.deletePatient(id);
-        return ResponseEntity.noContent().build();
+    public ResponseEntity<Void> deletePatient(@PathVariable Long id, HttpServletRequest request) {
+        try {
+            User currentUser = (User) org.springframework.security.core.context.SecurityContextHolder
+                    .getContext().getAuthentication().getPrincipal();
+            
+            // Get patient data for audit before deletion
+            var patientToDelete = patientService.getPatientById(id);
+            
+            patientService.deletePatient(id);
+            
+            // Log the deletion
+            auditService.logDelete("PATIENT", id, patientToDelete, currentUser.getId(), request);
+            
+            return ResponseEntity.noContent().build();
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().build();
+        }
     }
 
     @PatchMapping("/{id}/status")

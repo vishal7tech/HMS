@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import api from '../../services/api';
 import toast from 'react-hot-toast';
-import { 
+import {
   Search,
   Plus,
   Eye,
@@ -13,8 +13,8 @@ import {
   Receipt,
   Calendar,
   User,
-  TrendingUp,
-  Download
+  Download,
+  Trash2
 } from 'lucide-react';
 
 interface Payment {
@@ -73,10 +73,14 @@ const BillingPayments = () => {
   const fetchPaymentsData = async () => {
     try {
       setLoading(true);
-      
+
       // Fetch payments
-      const paymentsResponse = await api.get('/billing/payments');
-      setPayments(paymentsResponse.data || []);
+      const paymentsResponse = await api.get('/payments');
+      const data = paymentsResponse.data || [];
+      setPayments(data.map((p: any) => ({
+        ...p,
+        amount: p.amountPaid, // map to amount
+      })));
 
       // Fetch payment stats
       const statsResponse = await api.get('/billing/payment-stats');
@@ -90,45 +94,10 @@ const BillingPayments = () => {
         completedAmount: 0,
         refundedAmount: 0
       });
-      
+
     } catch (error) {
       console.error('Failed to fetch payments data:', error);
       toast.error('Failed to load payments data');
-      // Set fallback data
-      setPayments([
-        {
-          id: 1,
-          invoiceNumber: 'INV-001',
-          patientId: 1,
-          patientName: 'John Doe',
-          amount: 220,
-          paymentMethod: 'CARD',
-          status: 'COMPLETED',
-          transactionId: 'TXN-001',
-          createdAt: new Date().toISOString(),
-          completedAt: new Date().toISOString()
-        },
-        {
-          id: 2,
-          invoiceNumber: 'INV-002',
-          patientId: 2,
-          patientName: 'Jane Smith',
-          amount: 165,
-          paymentMethod: 'CASH',
-          status: 'PENDING',
-          createdAt: new Date().toISOString()
-        }
-      ]);
-      setPaymentStats({
-        todayPayments: 8,
-        pendingPayments: 3,
-        completedPayments: 5,
-        failedPayments: 0,
-        totalAmount: 5420,
-        pendingAmount: 890,
-        completedAmount: 4530,
-        refundedAmount: 0
-      });
     } finally {
       setLoading(false);
     }
@@ -136,7 +105,7 @@ const BillingPayments = () => {
 
   const handleProcessPayment = async (paymentId: number) => {
     try {
-      await api.put(`/billing/payments/${paymentId}/process`);
+      await api.post(`/payments`, { invoiceId: paymentId }); // mock trigger
       toast.success('Payment processed successfully');
       fetchPaymentsData();
     } catch (error) {
@@ -155,6 +124,30 @@ const BillingPayments = () => {
         console.error('Failed to refund payment:', error);
         toast.error('Failed to refund payment');
       }
+    }
+  };
+
+  const handleDeletePayment = async (id: number) => {
+    if (window.confirm('Are you sure you want to delete this payment record?')) {
+      try {
+        await api.delete(`/payments/${id}`);
+        toast.success('Payment record deleted');
+        fetchPaymentsData();
+      } catch (error) {
+        console.error('Failed to delete payment:', error);
+        toast.error('Failed to delete payment');
+      }
+    }
+  };
+
+  const handleUpdatePaymentStatus = async (id: number, newStatus: string) => {
+    try {
+      await api.put(`/payments/${id}/status`, { status: newStatus });
+      toast.success('Payment status updated');
+      fetchPaymentsData();
+    } catch (error) {
+      console.error('Failed to update status:', error);
+      toast.error('Failed to update status');
     }
   };
 
@@ -206,7 +199,7 @@ const BillingPayments = () => {
   };
 
   const filteredPayments = payments.filter(payment => {
-    const matchesSearch = 
+    const matchesSearch =
       payment.patientName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
       payment.invoiceNumber?.toLowerCase().includes(searchTerm.toLowerCase()) ||
       payment.transactionId?.toLowerCase().includes(searchTerm.toLowerCase());
@@ -409,7 +402,7 @@ const BillingPayments = () => {
                     </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm font-medium text-gray-900">${payment.amount.toFixed(2)}</div>
+                    <div className="text-sm font-medium text-gray-900">${(payment.amount || 0).toFixed(2)}</div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="flex items-center">
@@ -420,14 +413,21 @@ const BillingPayments = () => {
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="flex items-center">
                       {getStatusIcon(payment.status)}
-                      <span className={`ml-2 px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full border ${getStatusColor(payment.status)}`}>
-                        {payment.status}
-                      </span>
+                      <select
+                        value={payment.status}
+                        onChange={(e) => handleUpdatePaymentStatus(payment.id, e.target.value)}
+                        className={`ml-2 px-2 py-1 text-xs leading-5 font-semibold rounded-full border outline-none ${getStatusColor(payment.status)}`}
+                      >
+                        <option value="PENDING">PENDING</option>
+                        <option value="COMPLETED">COMPLETED</option>
+                        <option value="FAILED">FAILED</option>
+                        <option value="REFUNDED">REFUNDED</option>
+                      </select>
                     </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="text-sm text-gray-500">
-                      {payment.completedAt 
+                      {payment.completedAt
                         ? new Date(payment.completedAt).toLocaleDateString()
                         : new Date(payment.createdAt).toLocaleDateString()
                       }
@@ -460,6 +460,12 @@ const BillingPayments = () => {
                           Refund
                         </button>
                       )}
+                      <button
+                        onClick={() => handleDeletePayment(payment.id)}
+                        className="text-red-600 hover:text-red-800"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
                     </div>
                   </td>
                 </tr>
@@ -534,7 +540,7 @@ const BillingPayments = () => {
                 <div className="bg-gray-50 p-4 rounded-lg space-y-2">
                   <div className="flex justify-between">
                     <span className="text-gray-600">Amount:</span>
-                    <span className="font-medium">${selectedPayment.amount.toFixed(2)}</span>
+                    <span className="font-medium">${(selectedPayment.amount || 0).toFixed(2)}</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-gray-600">Payment Method:</span>

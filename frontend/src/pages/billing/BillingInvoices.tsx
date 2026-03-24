@@ -1,12 +1,10 @@
 import { useState, useEffect } from 'react';
 import api from '../../services/api';
 import toast from 'react-hot-toast';
-import { 
+import {
   Search,
-  Filter,
   Plus,
   Eye,
-  Edit,
   Trash2,
   Download,
   CreditCard,
@@ -66,7 +64,7 @@ const BillingInvoices = () => {
   const fetchInvoicesData = async () => {
     try {
       setLoading(true);
-      
+
       // Fetch invoices
       const invoicesResponse = await api.get('/invoices');
       setInvoices(invoicesResponse.data || []);
@@ -74,41 +72,10 @@ const BillingInvoices = () => {
       // Fetch completed appointments for bill generation
       const appointmentsResponse = await api.get('/billing/completed-appointments');
       setCompletedAppointments(appointmentsResponse.data || []);
-      
+
     } catch (error) {
       console.error('Failed to fetch invoices data:', error);
       toast.error('Failed to load invoices data');
-      // Set fallback data
-      setInvoices([
-        {
-          id: 1,
-          invoiceNumber: 'INV-001',
-          patientId: 1,
-          patientName: 'John Doe',
-          appointmentId: 1,
-          amount: 200,
-          tax: 20,
-          totalAmount: 220,
-          paymentMethod: 'CARD',
-          status: 'PAID',
-          createdAt: new Date().toISOString(),
-          dueDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString()
-        },
-        {
-          id: 2,
-          invoiceNumber: 'INV-002',
-          patientId: 2,
-          patientName: 'Jane Smith',
-          appointmentId: 2,
-          amount: 150,
-          tax: 15,
-          totalAmount: 165,
-          paymentMethod: 'CASH',
-          status: 'PENDING',
-          createdAt: new Date().toISOString(),
-          dueDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString()
-        }
-      ]);
       setCompletedAppointments([]);
     } finally {
       setLoading(false);
@@ -117,7 +84,7 @@ const BillingInvoices = () => {
 
   const handleGenerateBill = async (appointmentId: number) => {
     try {
-      await api.post(`/billing/generate/${appointmentId}`);
+      await api.post(`/invoices/generate/${appointmentId}`);
       toast.success('Bill generated successfully');
       fetchInvoicesData();
       setShowGenerateModal(false);
@@ -128,43 +95,47 @@ const BillingInvoices = () => {
   };
 
   const handleExportInvoices = async () => {
+    toast.success('Export planned for next release');
+  };
+
+  const handleDownloadPdf = async (invoiceId: number, invoiceNum: string) => {
     try {
-      const response = await api.get('/invoices/export', { responseType: 'blob' });
+      const response = await api.get(`/invoices/${invoiceId}/pdf`, { responseType: 'blob' });
       const url = window.URL.createObjectURL(new Blob([response.data]));
       const link = document.createElement('a');
       link.href = url;
-      link.setAttribute('download', `invoices_${new Date().toISOString().split('T')[0]}.csv`);
+      link.setAttribute('download', `${invoiceNum}.pdf`);
       document.body.appendChild(link);
       link.click();
       link.remove();
-      toast.success('Invoices exported successfully');
+      toast.success('PDF downloaded successfully');
     } catch (error) {
-      console.error('Failed to export invoices:', error);
-      toast.error('Failed to export invoices');
+      console.error('Failed to download PDF:', error);
+      toast.error('Failed to download PDF');
     }
   };
 
-  const handleUpdatePaymentStatus = async (invoiceId: number, status: string) => {
-    try {
-      await api.put(`/invoices/${invoiceId}/payment-status`, { paymentStatus: status });
-      toast.success('Payment status updated successfully');
-      fetchInvoicesData();
-    } catch (error) {
-      console.error('Failed to update payment status:', error);
-      toast.error('Failed to update payment status');
-    }
-  };
-
-  const handleDeleteInvoice = async (invoiceId: number) => {
+  const handleDeleteInvoice = async (id: number) => {
     if (window.confirm('Are you sure you want to delete this invoice?')) {
       try {
-        await api.delete(`/invoices/${invoiceId}`);
+        await api.delete(`/invoices/${id}`);
         toast.success('Invoice deleted successfully');
         fetchInvoicesData();
       } catch (error) {
         console.error('Failed to delete invoice:', error);
         toast.error('Failed to delete invoice');
       }
+    }
+  };
+
+  const handleUpdateStatus = async (id: number, newStatus: string) => {
+    try {
+      await api.put(`/invoices/${id}/payment-status`, { status: newStatus });
+      toast.success('Invoice status updated');
+      fetchInvoicesData();
+    } catch (error) {
+      console.error('Failed to update status:', error);
+      toast.error('Failed to update status');
     }
   };
 
@@ -190,7 +161,7 @@ const BillingInvoices = () => {
   };
 
   const filteredInvoices = invoices.filter(invoice => {
-    const matchesSearch = 
+    const matchesSearch =
       invoice.patientName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
       invoice.invoiceNumber?.toLowerCase().includes(searchTerm.toLowerCase());
 
@@ -319,9 +290,9 @@ const BillingInvoices = () => {
                     </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm font-medium text-gray-900">${invoice.totalAmount.toFixed(2)}</div>
+                    <div className="text-sm font-medium text-gray-900">${(invoice.totalAmount || 0).toFixed(2)}</div>
                     {invoice.tax > 0 && (
-                      <div className="text-xs text-gray-500">Tax: ${invoice.tax.toFixed(2)}</div>
+                      <div className="text-xs text-gray-500">Tax: ${(invoice.tax || 0).toFixed(2)}</div>
                     )}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
@@ -331,9 +302,17 @@ const BillingInvoices = () => {
                     </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <span className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full border ${getStatusColor(invoice.status)}`}>
-                      {invoice.status}
-                    </span>
+                    <select
+                      value={invoice.status}
+                      onChange={(e) => handleUpdateStatus(invoice.id, e.target.value)}
+                      className={`text-xs font-semibold rounded-full border px-2 py-1 outline-none ${getStatusColor(invoice.status)}`}
+                    >
+                      <option value="PENDING">PENDING</option>
+                      <option value="PAID">PAID</option>
+                      <option value="PARTIAL">PARTIAL</option>
+                      <option value="OVERDUE">OVERDUE</option>
+                      <option value="CANCELLED">CANCELLED</option>
+                    </select>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="text-sm text-gray-500">
@@ -351,17 +330,6 @@ const BillingInvoices = () => {
                       >
                         <Eye className="w-4 h-4" />
                       </button>
-                      {invoice.status === 'PENDING' && (
-                        <select
-                          value={invoice.status}
-                          onChange={(e) => handleUpdatePaymentStatus(invoice.id, e.target.value)}
-                          className="text-xs border border-gray-300 rounded px-2 py-1"
-                        >
-                          <option value="PENDING">Pending</option>
-                          <option value="PAID">Paid</option>
-                          <option value="CANCELLED">Cancelled</option>
-                        </select>
-                      )}
                       <button
                         onClick={() => handleDeleteInvoice(invoice.id)}
                         className="text-red-600 hover:text-red-800"
@@ -525,15 +493,15 @@ const BillingInvoices = () => {
               <div className="space-y-2">
                 <div className="flex justify-between">
                   <span className="text-gray-600">Subtotal:</span>
-                  <span className="font-medium">${selectedInvoice.amount.toFixed(2)}</span>
+                  <span className="font-medium">${(selectedInvoice.amount || 0).toFixed(2)}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-gray-600">Tax:</span>
-                  <span className="font-medium">${selectedInvoice.tax.toFixed(2)}</span>
+                  <span className="font-medium">${(selectedInvoice.tax || 0).toFixed(2)}</span>
                 </div>
                 <div className="flex justify-between text-lg font-bold">
                   <span>Total:</span>
-                  <span>${selectedInvoice.totalAmount.toFixed(2)}</span>
+                  <span>${(selectedInvoice.totalAmount || 0).toFixed(2)}</span>
                 </div>
               </div>
             </div>
@@ -548,7 +516,10 @@ const BillingInvoices = () => {
               >
                 Close
               </button>
-              <button className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700">
+              <button 
+                onClick={() => handleDownloadPdf(selectedInvoice.id, selectedInvoice.invoiceNumber)}
+                className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700"
+              >
                 Download PDF
               </button>
             </div>

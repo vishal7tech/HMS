@@ -26,6 +26,10 @@ public interface InvoiceRepository extends JpaRepository<Invoice, Long> {
 
     long countByStatus(PaymentStatus status);
 
+    List<Invoice> findTop10ByOrderByCreatedAtDesc();
+
+    long countByCreatedAtAfter(LocalDateTime after);
+
     @org.springframework.data.jpa.repository.Query("SELECT SUM(i.amount) FROM Invoice i WHERE i.status = 'PENDING'")
     java.math.BigDecimal calculateTotalOutstanding();
 }

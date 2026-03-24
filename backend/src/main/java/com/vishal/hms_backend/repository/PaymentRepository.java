@@ -13,4 +13,13 @@ public interface PaymentRepository extends JpaRepository<Payment, Long> {
 
     @Query("SELECT SUM(p.amountPaid) FROM Payment p WHERE p.status = com.vishal.hms_backend.entity.PaymentStatus.PAID")
     java.math.BigDecimal calculateTotalRevenue();
+
+    java.util.List<Payment> findByCreatedAtBetween(java.time.LocalDateTime start, java.time.LocalDateTime end);
+
+    java.util.List<Payment> findByStatus(com.vishal.hms_backend.entity.PaymentStatus status);
+
+    long countByStatus(com.vishal.hms_backend.entity.PaymentStatus status);
+
+    @Query("SELECT SUM(p.amountPaid) FROM Payment p WHERE p.status = :status")
+    java.math.BigDecimal calculateTotalAmountByStatus(@org.springframework.data.repository.query.Param("status") com.vishal.hms_backend.entity.PaymentStatus status);
 }

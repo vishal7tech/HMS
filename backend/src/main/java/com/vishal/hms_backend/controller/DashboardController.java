@@ -15,7 +15,7 @@ import java.time.LocalDate;
 
 @RestController
 @RequestMapping("/api/dashboard")
-@PreAuthorize("hasAnyRole('ADMIN', 'RECEPTIONIST')")
+@PreAuthorize("hasAnyRole('ADMIN', 'RECEPTIONIST', 'BILLING')")
 @RequiredArgsConstructor
 public class DashboardController {
 

@@ -2,6 +2,7 @@
 import { createContext, useContext, useState, useEffect } from 'react';
 import type { ReactNode } from 'react';
 import { jwtDecode } from 'jwt-decode';
+import api from '../services/api';
 
 interface User {
     sub: string; // username
@@ -51,9 +52,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setUser(decoded);
     };
 
-    const logout = () => {
-        localStorage.removeItem('token');
-        setUser(null);
+    const logout = async () => {
+        try {
+            // Call backend logout API to record logout event
+            await api.post('/auth/logout');
+        } catch (error) {
+            console.error('Logout API call failed:', error);
+        } finally {
+            // Remove token and clear user state regardless of API call success
+            localStorage.removeItem('token');
+            setUser(null);
+        }
     };
 
     const hasRole = (role: string): boolean => {

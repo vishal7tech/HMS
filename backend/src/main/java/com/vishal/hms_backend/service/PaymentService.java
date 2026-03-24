@@ -79,7 +79,43 @@ public class PaymentService {
                 .collect(Collectors.toList());
     }
 
+    @Transactional(readOnly = true)
+    public List<PaymentResponseDTO> getAllPayments() {
+        return paymentRepository.findAll().stream()
+                .map(this::toResponseDto)
+                .collect(Collectors.toList());
+    }
+
+    @Transactional
+    public PaymentResponseDTO updatePaymentStatus(Long id, PaymentStatus status) {
+        Payment payment = paymentRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Payment not found"));
+        
+        Payment saved = paymentRepository.save(payment);
+        try {
+            auditService.logUpdate("Payment", id, payment, saved, null, null);
+        } catch (Exception e) {}
+        
+        return toResponseDto(saved);
+    }
+
+    @Transactional
+    public void deletePayment(Long id) {
+        Payment payment = paymentRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Payment not found"));
+        
+        paymentRepository.delete(payment);
+        try {
+            auditService.logDelete("Payment", id, payment, null, null);
+        } catch (Exception e) {}
+    }
+
     private PaymentResponseDTO toResponseDto(Payment payment) {
+        String patName = payment.getInvoice() != null && payment.getInvoice().getPatient() != null && payment.getInvoice().getPatient().getUser() != null ?
+                payment.getInvoice().getPatient().getUser().getName() : "Unknown";
+        Long patId = payment.getInvoice() != null && payment.getInvoice().getPatient() != null ?
+                payment.getInvoice().getPatient().getId() : null;
+
         return PaymentResponseDTO.builder()
                 .id(payment.getId())
                 .invoiceId(payment.getInvoice().getId())
@@ -87,6 +123,11 @@ public class PaymentService {
                 .method(payment.getMethod())
                 .transactionId(payment.getTransactionId())
                 .status(payment.getStatus())
+                .invoiceNumber(payment.getInvoice() != null ? payment.getInvoice().getInvoiceNumber() : "N/A")
+                .patientName(patName)
+                .patientId(patId)
+                .createdAt(payment.getCreatedAt())
+                .completedAt(payment.getUpdatedAt()) // Use updatedAt as completedAt proxy
                 .build();
     }
 }

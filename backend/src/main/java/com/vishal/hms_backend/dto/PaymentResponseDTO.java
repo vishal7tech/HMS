@@ -16,4 +16,9 @@ public class PaymentResponseDTO {
     private PaymentMethod method;
     private String transactionId;
     private PaymentStatus status;
+    private String invoiceNumber;
+    private String patientName;
+    private Long patientId;
+    private java.time.LocalDateTime createdAt;
+    private java.time.LocalDateTime completedAt;
 }

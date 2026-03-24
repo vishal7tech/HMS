@@ -16,6 +16,8 @@ public interface AuditLogRepository extends JpaRepository<AuditLog, Long> {
 
     Page<AuditLog> findAllByOrderByChangedAtDesc(Pageable pageable);
 
+    Page<AuditLog> findByEntityTypeOrderByChangedAtDesc(String entityType, Pageable pageable);
+
     Page<AuditLog> findByEntityTypeAndEntityIdOrderByChangedAtDesc(String entityType, Long entityId, Pageable pageable);
 
     Page<AuditLog> findByChangedByOrderByChangedAtDesc(Long changedBy, Pageable pageable);
@@ -26,7 +28,7 @@ public interface AuditLogRepository extends JpaRepository<AuditLog, Long> {
     @Query("SELECT COUNT(a) FROM AuditLog a WHERE a.changedAt >= :since")
     long countAuditLogsSince(@Param("since") LocalDateTime since);
 
-    @Query("SELECT a.entityType, COUNT(a) FROM AuditLog a WHERE a.changedAt >= :since GROUP BY a.entityType")
+    @Query("SELECT a.action, COUNT(a) FROM AuditLog a WHERE a.changedAt >= :since GROUP BY a.action")
     List<Object[]> getAuditSummaryByEntityTypeSince(@Param("since") LocalDateTime since);
 
     @Query("SELECT a.changedBy, COUNT(a) FROM AuditLog a WHERE a.changedAt >= :since GROUP BY a.changedBy ORDER BY COUNT(a) DESC")

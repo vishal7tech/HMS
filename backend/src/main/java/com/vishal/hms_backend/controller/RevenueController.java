@@ -16,7 +16,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/revenue")
-@PreAuthorize("hasAnyRole('ADMIN', 'RECEPTIONIST')")
+@PreAuthorize("hasAnyRole('ADMIN', 'RECEPTIONIST', 'BILLING')")
 @RequiredArgsConstructor
 public class RevenueController {
 

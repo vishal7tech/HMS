@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { X } from 'lucide-react';
 import toast from 'react-hot-toast';
+import api from '../../services/api';
 
 interface ModalProps {
   isOpen: boolean;
@@ -56,14 +57,18 @@ const DepartmentModal: React.FC<DepartmentModalProps> = ({ isOpen, onClose, onSu
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      // API call to add department
-      await new Promise(resolve => setTimeout(resolve, 1000)); // Simulate API call
+      await api.post('/staff-categories/departments', {
+        name: formData.name,
+        description: formData.description,
+        headOfDepartment: formData.headOfDepartment
+      });
       toast.success('Department added successfully');
       onSuccess();
       onClose();
       setFormData({ name: '', description: '', headOfDepartment: '' });
-    } catch (error) {
-      toast.error('Failed to add department');
+    } catch (error: any) {
+      console.error('Failed to add department:', error);
+      toast.error(error.response?.data?.message || 'Failed to add department');
     }
   };
 
@@ -129,13 +134,18 @@ const DesignationModal: React.FC<DepartmentModalProps> = ({ isOpen, onClose, onS
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      await api.post('/staff-categories/designations', {
+        name: formData.title,
+        type: formData.department,
+        description: formData.description
+      });
       toast.success('Designation added successfully');
       onSuccess();
       onClose();
       setFormData({ title: '', description: '', department: '', level: '' });
-    } catch (error) {
-      toast.error('Failed to add designation');
+    } catch (error: any) {
+      console.error('Failed to add designation:', error);
+      toast.error(error.response?.data?.message || 'Failed to add designation');
     }
   };
 
@@ -204,13 +214,18 @@ const DesignationTypeModal: React.FC<DepartmentModalProps> = ({ isOpen, onClose,
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      await api.post('/staff-categories/designations', {
+        name: formData.name,
+        type: formData.category,
+        description: formData.description
+      });
       toast.success('Designation Type added successfully');
       onSuccess();
       onClose();
       setFormData({ name: '', category: '', description: '' });
-    } catch (error) {
-      toast.error('Failed to add designation type');
+    } catch (error: any) {
+      console.error('Failed to add designation type:', error);
+      toast.error(error.response?.data?.message || 'Failed to add designation type');
     }
   };
 
@@ -271,13 +286,19 @@ const ShiftModal: React.FC<DepartmentModalProps> = ({ isOpen, onClose, onSuccess
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      await api.post('/staff-categories/shifts', {
+        name: formData.name,
+        startTime: formData.startTime,
+        endTime: formData.endTime,
+        description: formData.description
+      });
       toast.success('Shift added successfully');
       onSuccess();
       onClose();
       setFormData({ name: '', startTime: '', endTime: '', description: '' });
-    } catch (error) {
-      toast.error('Failed to add shift');
+    } catch (error: any) {
+      console.error('Failed to add shift:', error);
+      toast.error(error.response?.data?.message || 'Failed to add shift');
     }
   };
 
@@ -347,13 +368,19 @@ const LeaveTypeModal: React.FC<DepartmentModalProps> = ({ isOpen, onClose, onSuc
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      await api.post('/staff-categories/leave-types', {
+        name: formData.name,
+        maxDaysPerYear: parseInt(formData.maxDays),
+        requiresApproval: true,
+        description: formData.description
+      });
       toast.success('Leave Type added successfully');
       onSuccess();
       onClose();
       setFormData({ name: '', maxDays: '', description: '', isPaid: true });
-    } catch (error) {
-      toast.error('Failed to add leave type');
+    } catch (error: any) {
+      console.error('Failed to add leave type:', error);
+      toast.error(error.response?.data?.message || 'Failed to add leave type');
     }
   };
 
@@ -422,13 +449,19 @@ const HolidayModal: React.FC<DepartmentModalProps> = ({ isOpen, onClose, onSucce
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      await api.post('/staff-categories/holidays', {
+        name: formData.name,
+        date: formData.date,
+        description: formData.description,
+        isRecurring: formData.type === 'public'
+      });
       toast.success('Holiday added successfully');
       onSuccess();
       onClose();
       setFormData({ name: '', date: '', type: 'public', description: '' });
-    } catch (error) {
-      toast.error('Failed to add holiday');
+    } catch (error: any) {
+      console.error('Failed to add holiday:', error);
+      toast.error(error.response?.data?.message || 'Failed to add holiday');
     }
   };
 

@@ -52,13 +52,17 @@ public class Invoice {
     private BigDecimal tax = BigDecimal.ZERO;
 
     @Column(name = "total_amount")
-    private BigDecimal totalAmount;
+    @Builder.Default
+    private BigDecimal totalAmount = BigDecimal.ZERO;
 
     @Column(name = "payment_method")
     private String paymentMethod;
 
     @Column(name = "notes")
     private String notes;
+
+    @Column(name = "paid_at")
+    private LocalDateTime paidAt;
 
     @PrePersist
     protected void onCreate() {

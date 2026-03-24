@@ -7,6 +7,7 @@ import com.vishal.hms_backend.entity.Invoice;
 import com.vishal.hms_backend.entity.PaymentStatus;
 import com.vishal.hms_backend.exception.ConflictException;
 import com.vishal.hms_backend.repository.AppointmentRepository;
+import com.vishal.hms_backend.repository.InvoiceItemRepository;
 import com.vishal.hms_backend.repository.InvoiceRepository;
 import com.vishal.hms_backend.repository.PatientProfileRepository;
 import jakarta.persistence.EntityNotFoundException;
@@ -142,6 +143,35 @@ public class InvoiceService {
         return invoiceRepository.findByStatus(PaymentStatus.PENDING).stream()
                 .map(this::toResponseDto)
                 .collect(Collectors.toList());
+    }
+
+    @Transactional
+    public InvoiceResponseDTO updatePaymentStatus(Long id, PaymentStatus status) {
+        Invoice invoice = invoiceRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Invoice not found"));
+        
+        PaymentStatus oldStatus = invoice.getStatus();
+        invoice.setStatus(status);
+        if (status == PaymentStatus.PAID) {
+            invoice.setPaidAt(LocalDateTime.now());
+        }
+        
+        Invoice saved = invoiceRepository.save(invoice);
+        try {
+            auditService.logUpdate("Invoice", id, invoice, saved, null, null);
+        } catch (Exception e) {}
+        
+        return toResponseDto(saved);
+    }
+
+    @Transactional
+    public void deleteInvoice(Long id) {
+        Invoice invoice = invoiceRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Invoice not found"));
+        invoiceRepository.delete(invoice);
+        try {
+            auditService.logDelete("Invoice", id, invoice, null, null);
+        } catch (Exception e) {}
     }
 
     @Transactional(readOnly = true)

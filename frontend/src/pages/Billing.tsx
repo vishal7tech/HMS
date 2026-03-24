@@ -11,10 +11,8 @@ import {
   Calendar,
   User,
   Search,
-  Filter,
   Plus,
   Eye,
-  Edit,
   Trash2,
   TrendingUp,
   CreditCard,
@@ -88,13 +86,10 @@ const Billing = () => {
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [filterStatus, setFilterStatus] = useState('ALL');
-  const [filterDateRange, setFilterDateRange] = useState('ALL');
   const [showInvoiceModal, setShowInvoiceModal] = useState(false);
   const [selectedInvoice, setSelectedInvoice] = useState<Invoice | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
-
-  const paymentMethods = ['CASH', 'CARD', 'UPI', 'INSURANCE'];
 
 
   useEffect(() => {
@@ -532,9 +527,9 @@ const Billing = () => {
                       <div className="text-sm text-gray-900">Appointment ID: {invoice.appointmentId}</div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm font-medium text-gray-900">${invoice.totalAmount.toFixed(2)}</div>
+                      <div className="text-sm font-medium text-gray-900">${(invoice.totalAmount || 0).toFixed(2)}</div>
                       {invoice.tax > 0 && (
-                        <div className="text-xs text-gray-500">Tax: ${invoice.tax.toFixed(2)}</div>
+                        <div className="text-xs text-gray-500">Tax: ${(invoice.tax || 0).toFixed(2)}</div>
                       )}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
@@ -669,15 +664,15 @@ const Billing = () => {
               <div className="space-y-2">
                 <div className="flex justify-between">
                   <span className="text-gray-600">Subtotal:</span>
-                  <span className="font-medium">${selectedInvoice.amount.toFixed(2)}</span>
+                  <span className="font-medium">${(selectedInvoice.amount || 0).toFixed(2)}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-gray-600">Tax:</span>
-                  <span className="font-medium">${selectedInvoice.tax.toFixed(2)}</span>
+                  <span className="font-medium">${(selectedInvoice.tax || 0).toFixed(2)}</span>
                 </div>
                 <div className="flex justify-between text-lg font-bold">
                   <span>Total:</span>
-                  <span>${selectedInvoice.totalAmount.toFixed(2)}</span>
+                  <span>${(selectedInvoice.totalAmount || 0).toFixed(2)}</span>
                 </div>
               </div>
             </div>

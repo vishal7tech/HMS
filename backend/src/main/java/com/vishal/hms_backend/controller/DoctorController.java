@@ -3,6 +3,8 @@ package com.vishal.hms_backend.controller;
 import com.vishal.hms_backend.dto.DoctorRequestDTO;
 import com.vishal.hms_backend.dto.DoctorResponseDTO;
 import com.vishal.hms_backend.service.DoctorService;
+import com.vishal.hms_backend.service.AuditService;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -20,6 +22,7 @@ import java.util.List;
 public class DoctorController {
 
     private final DoctorService doctorService;
+    private final AuditService auditService;
 
     @GetMapping
     public ResponseEntity<List<DoctorResponseDTO>> getAllDoctors() {
@@ -28,16 +31,43 @@ public class DoctorController {
 
     @PostMapping
     @PreAuthorize("hasAnyRole('ADMIN', 'RECEPTIONIST')")
-    public ResponseEntity<DoctorResponseDTO> createDoctor(@Valid @RequestBody DoctorRequestDTO dto) {
-        DoctorResponseDTO created = doctorService.createDoctor(dto);
-        return new ResponseEntity<>(created, HttpStatus.CREATED);
+    public ResponseEntity<DoctorResponseDTO> createDoctor(
+            @Valid @RequestBody DoctorRequestDTO dto,
+            HttpServletRequest request) {
+        try {
+            User currentUser = (User) org.springframework.security.core.context.SecurityContextHolder
+                    .getContext().getAuthentication().getPrincipal();
+            
+            DoctorResponseDTO created = doctorService.createDoctor(dto);
+            
+            // Log the creation
+            auditService.logCreate("DOCTOR", created.getId(), dto, currentUser.getId(), request);
+            
+            return new ResponseEntity<>(created, HttpStatus.CREATED);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().build();
+        }
     }
 
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<Void> deleteDoctor(@PathVariable Long id) {
-        doctorService.deleteDoctor(id);
-        return ResponseEntity.noContent().build();
+    public ResponseEntity<Void> deleteDoctor(@PathVariable Long id, HttpServletRequest request) {
+        try {
+            User currentUser = (User) org.springframework.security.core.context.SecurityContextHolder
+                    .getContext().getAuthentication().getPrincipal();
+            
+            // Get doctor data for audit before deletion
+            var doctorToDelete = doctorService.getDoctorById(id);
+            
+            doctorService.deleteDoctor(id);
+            
+            // Log the deletion
+            auditService.logDelete("DOCTOR", id, doctorToDelete, currentUser.getId(), request);
+            
+            return ResponseEntity.noContent().build();
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().build();
+        }
     }
 
     @GetMapping("/{id}")

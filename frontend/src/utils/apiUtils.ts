@@ -91,7 +91,7 @@ export class ApiUtils {
   }
 
   static createDebouncedSearch(delay: number = 300) {
-    let timeoutId: NodeJS.Timeout;
+    let timeoutId: ReturnType<typeof setTimeout>;
     
     return function<T extends (...args: any[]) => void>(
       callback: T,

@@ -3,6 +3,7 @@ package com.vishal.hms_backend.controller;
 import com.vishal.hms_backend.dto.InvoiceRequestDTO;
 import com.vishal.hms_backend.dto.InvoiceResponseDTO;
 import com.vishal.hms_backend.entity.Invoice;
+import com.vishal.hms_backend.entity.PaymentStatus;
 import com.vishal.hms_backend.service.InvoiceService;
 import com.vishal.hms_backend.service.PdfGenerationService;
 import jakarta.validation.Valid;
@@ -34,20 +35,20 @@ public class InvoiceController {
     private final PdfGenerationService pdfGenerationService;
 
     @GetMapping
-    @PreAuthorize("hasAnyRole('ADMIN', 'RECEPTIONIST')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'RECEPTIONIST', 'BILLING')")
     public ResponseEntity<List<InvoiceResponseDTO>> getAllInvoices() {
         return ResponseEntity.ok(invoiceService.getAllInvoices());
     }
 
     @PostMapping
-    @PreAuthorize("hasAnyRole('ADMIN', 'RECEPTIONIST')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'RECEPTIONIST', 'BILLING')")
     public ResponseEntity<InvoiceResponseDTO> createInvoice(@Valid @RequestBody InvoiceRequestDTO dto) {
         InvoiceResponseDTO created = invoiceService.createInvoice(dto);
         return new ResponseEntity<>(created, HttpStatus.CREATED);
     }
 
     @PostMapping("/generate/{appointmentId}")
-    @PreAuthorize("hasAnyRole('ADMIN', 'RECEPTIONIST')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'RECEPTIONIST', 'BILLING')")
     public ResponseEntity<InvoiceResponseDTO> generateInvoiceForAppointment(@PathVariable Long appointmentId) {
         InvoiceResponseDTO created = invoiceService.generateInvoiceForAppointment(appointmentId);
         return new ResponseEntity<>(created, HttpStatus.CREATED);
@@ -66,7 +67,7 @@ public class InvoiceController {
     }
 
     @GetMapping("/pending")
-    @PreAuthorize("hasAnyRole('ADMIN', 'RECEPTIONIST')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'RECEPTIONIST', 'BILLING')")
     public ResponseEntity<List<InvoiceResponseDTO>> getPendingInvoices() {
         return ResponseEntity.ok(invoiceService.getPendingInvoices());
     }
@@ -114,7 +115,7 @@ public class InvoiceController {
     }
 
     @PostMapping("/{id}/regenerate-pdf")
-    @PreAuthorize("hasAnyRole('ADMIN', 'RECEPTIONIST')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'RECEPTIONIST', 'BILLING')")
     public ResponseEntity<String> regenerateInvoicePdf(@PathVariable Long id) {
         try {
             Invoice invoice = invoiceService.getInvoiceEntityById(id);
@@ -128,5 +129,22 @@ public class InvoiceController {
             log.error("Error regenerating PDF for invoice {}", id, e);
             return ResponseEntity.internalServerError().body("Failed to regenerate PDF");
         }
+    }
+
+    @PutMapping("/{id}/payment-status")
+    @PreAuthorize("hasAnyRole('ADMIN', 'RECEPTIONIST', 'BILLING')")
+    public ResponseEntity<InvoiceResponseDTO> updatePaymentStatus(
+            @PathVariable Long id,
+            @RequestBody java.util.Map<String, String> request) {
+        String statusStr = request.get("paymentStatus");
+        PaymentStatus status = PaymentStatus.valueOf(statusStr);
+        return ResponseEntity.ok(invoiceService.updatePaymentStatus(id, status));
+    }
+
+    @DeleteMapping("/{id}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'RECEPTIONIST', 'BILLING')")
+    public ResponseEntity<Void> deleteInvoice(@PathVariable Long id) {
+        invoiceService.deleteInvoice(id);
+        return ResponseEntity.noContent().build();
     }
 }
