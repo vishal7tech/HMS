@@ -12,5 +12,8 @@ public class DashboardStats {
     private long appointmentsToday;
     private long appointmentsInPeriod;
     private java.math.BigDecimal totalRevenue;
-    // more fields can be added: completed, revenue, top specializations, etc.
+    private long completedAppointments;
+    private long cancelledAppointments;
+    private long pendingBills;
+    private long paidBills;
 }

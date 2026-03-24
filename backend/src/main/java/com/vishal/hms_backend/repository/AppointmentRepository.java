@@ -1,6 +1,7 @@
 package com.vishal.hms_backend.repository;
 
 import com.vishal.hms_backend.entity.Appointment;
+import com.vishal.hms_backend.entity.AppointmentStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -30,4 +31,6 @@ public interface AppointmentRepository extends JpaRepository<Appointment, Long> 
         List<Appointment> findByDoctorIdOrderByDateTimeAsc(Long doctorId);
 
         long countByDateTimeBetween(LocalDateTime start, LocalDateTime end);
+
+        long countByStatus(AppointmentStatus status);
 }

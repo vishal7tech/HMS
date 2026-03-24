@@ -6,21 +6,25 @@ import com.vishal.hms_backend.entity.Appointment;
 import com.vishal.hms_backend.entity.Billing;
 import com.vishal.hms_backend.entity.Patient;
 import com.vishal.hms_backend.entity.PaymentStatus;
+import com.vishal.hms_backend.exception.ConflictException;
 import com.vishal.hms_backend.mapper.BillingMapper;
 import com.vishal.hms_backend.repository.AppointmentRepository;
 import com.vishal.hms_backend.repository.BillingRepository;
 import com.vishal.hms_backend.repository.PatientRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class BillingService {
 
     private final BillingRepository billingRepository;
@@ -69,5 +73,75 @@ public class BillingService {
             throw new EntityNotFoundException("Billing not found");
         }
         billingRepository.deleteById(id);
+    }
+
+    @Transactional
+    public BillingResponseDTO generateBillForAppointment(Long appointmentId) {
+        Appointment appointment = appointmentRepository.findById(appointmentId)
+                .orElseThrow(() -> new EntityNotFoundException("Appointment not found"));
+
+        // Check if bill already exists for this appointment
+        if (billingRepository.existsByAppointmentId(appointmentId)) {
+            throw new ConflictException("Bill already exists for this appointment");
+        }
+
+        // Calculate bill amount based on doctor's specialization
+        BigDecimal amount = calculateConsultationFee(appointment.getDoctor().getSpecialization());
+
+        Billing billing = Billing.builder()
+                .patient(appointment.getPatient())
+                .appointment(appointment)
+                .amount(amount)
+                .paymentMethod("CASH") // Default payment method
+                .paymentStatus(PaymentStatus.PENDING)
+                .issuedAt(LocalDateTime.now())
+                .build();
+
+        Billing saved = billingRepository.save(billing);
+        log.info("Generated bill {} for appointment {}", saved.getId(), appointmentId);
+
+        return billingMapper.toResponseDto(saved);
+    }
+
+    @Transactional
+    public BillingResponseDTO updatePaymentStatus(Long billingId, PaymentStatus status) {
+        Billing billing = billingRepository.findById(billingId)
+                .orElseThrow(() -> new EntityNotFoundException("Billing not found"));
+
+        billing.setPaymentStatus(status);
+
+        Billing saved = billingRepository.save(billing);
+        log.info("Updated payment status for bill {} to {}", billingId, status);
+
+        return billingMapper.toResponseDto(saved);
+    }
+
+    @Transactional(readOnly = true)
+    public List<BillingResponseDTO> getPendingBills() {
+        return billingRepository.findByPaymentStatus(PaymentStatus.PENDING).stream()
+                .map(billingMapper::toResponseDto)
+                .collect(Collectors.toList());
+    }
+
+    @Transactional(readOnly = true)
+    public BigDecimal getTotalRevenue() {
+        return billingRepository.calculateTotalRevenue();
+    }
+
+    private BigDecimal calculateConsultationFee(String specialization) {
+        // Define consultation fees based on specialization
+        switch (specialization.toLowerCase()) {
+            case "cardiology":
+            case "neurology":
+                return new BigDecimal("500.00");
+            case "orthopedics":
+            case "pediatrics":
+                return new BigDecimal("400.00");
+            case "general":
+            case "family medicine":
+                return new BigDecimal("200.00");
+            default:
+                return new BigDecimal("300.00");
+        }
     }
 }
