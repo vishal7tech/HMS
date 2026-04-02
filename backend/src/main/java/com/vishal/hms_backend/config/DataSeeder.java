@@ -96,6 +96,34 @@ public class DataSeeder {
                                 u.setEmail("patient@hms.com");
                                 u.setPassword(passwordEncoder.encode("patient123"));
                                 userRepository.save(u);
+                                
+                                // Also ensure patient profile exists
+                                patientRepository.findByUser_Username("patient").ifPresentOrElse(profile -> {
+                                        // Update existing profile
+                                        profile.setFirstName("John");
+                                        profile.setLastName("Doe");
+                                        profile.setContactNumber("+0987654321");
+                                        profile.setAddress("123 Main St, Springfield");
+                                        profile.setBloodGroup("O+");
+                                        profile.setDateOfBirth(LocalDate.of(1990, 5, 20));
+                                        profile.setGender("Male");
+                                        profile.setMedicalHistory("None");
+                                        patientRepository.save(profile);
+                                }, () -> {
+                                        // Create new profile
+                                        PatientProfile patProfile = PatientProfile.builder()
+                                                        .user(u)
+                                                        .firstName("John")
+                                                        .lastName("Doe")
+                                                        .contactNumber("+0987654321")
+                                                        .address("123 Main St, Springfield")
+                                                        .bloodGroup("O+")
+                                                        .dateOfBirth(LocalDate.of(1990, 5, 20))
+                                                        .gender("Male")
+                                                        .medicalHistory("None")
+                                                        .build();
+                                        patientRepository.save(patProfile);
+                                });
                         }, () -> {
                                 User patUser = User.builder()
                                                 .username("patient")
@@ -109,6 +137,8 @@ public class DataSeeder {
 
                                 PatientProfile patProfile = PatientProfile.builder()
                                                 .user(savedPat)
+                                                .firstName("John")
+                                                .lastName("Doe")
                                                 .contactNumber("+0987654321")
                                                 .address("123 Main St, Springfield")
                                                 .bloodGroup("O+")

@@ -39,6 +39,11 @@ public class AppointmentService {
 
         @Transactional
         public AppointmentResponseDTO bookAppointment(AppointmentRequestDTO dto) {
+                // Validate that patientId is present (should be set by controller for patients)
+                if (dto.getPatientId() == null) {
+                        throw new IllegalArgumentException("Patient ID is required");
+                }
+                
                 PatientProfile patient = patientRepo.findById(dto.getPatientId())
                                 .orElseThrow(() -> new EntityNotFoundException("Patient not found"));
 
@@ -233,6 +238,12 @@ public class AppointmentService {
                                 .filter(a -> !a.getSlotTime().isBefore(start) && !a.getSlotTime().isAfter(end))
                                 .map(this::toResponseDto)
                                 .collect(Collectors.toList());
+        }
+
+        @Transactional(readOnly = true)
+        public PatientProfile getPatientByUsername(String username) {
+                return patientRepo.findByUser_Username(username)
+                                .orElseThrow(() -> new EntityNotFoundException("Patient not found for username: " + username));
         }
 
         private AppointmentResponseDTO toResponseDto(Appointment appointment) {

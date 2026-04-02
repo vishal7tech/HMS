@@ -11,7 +11,6 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 public class AppointmentRequestDTO {
 
-    @NotNull(message = "Patient ID is required")
     private Long patientId;
 
     @NotNull(message = "Doctor ID is required")

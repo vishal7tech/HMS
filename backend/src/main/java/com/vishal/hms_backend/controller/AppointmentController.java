@@ -3,6 +3,7 @@ package com.vishal.hms_backend.controller;
 import com.vishal.hms_backend.dto.AppointmentRequestDTO;
 import com.vishal.hms_backend.dto.AppointmentResponseDTO;
 import com.vishal.hms_backend.dto.AppointmentStatsDTO;
+import com.vishal.hms_backend.entity.PatientProfile;
 import com.vishal.hms_backend.service.AppointmentService;
 import com.vishal.hms_backend.service.DashboardService;
 import jakarta.validation.Valid;
@@ -31,8 +32,22 @@ public class AppointmentController {
     }
 
     @PostMapping
-    @PreAuthorize("hasAnyRole('ADMIN', 'RECEPTIONIST')")
-    public ResponseEntity<AppointmentResponseDTO> bookAppointment(@Valid @RequestBody AppointmentRequestDTO dto) {
+    @PreAuthorize("hasAnyRole('ADMIN', 'RECEPTIONIST', 'PATIENT')")
+    public ResponseEntity<AppointmentResponseDTO> bookAppointment(@Valid @RequestBody AppointmentRequestDTO dto, Principal principal) {
+        // If patient is booking, override patientId with their own ID
+        if (principal != null && principal.getName() != null) {
+            String username = principal.getName();
+            // Check if the current user is a patient
+            org.springframework.security.core.Authentication auth = org.springframework.security.core.context.SecurityContextHolder.getContext().getAuthentication();
+            boolean isPatient = auth.getAuthorities().stream()
+                .anyMatch(authority -> authority.getAuthority().equals("ROLE_PATIENT"));
+            
+            if (isPatient) {
+                // Get patient ID from username
+                PatientProfile patient = appointmentService.getPatientByUsername(username);
+                dto.setPatientId(patient.getId());
+            }
+        }
         AppointmentResponseDTO booked = appointmentService.bookAppointment(dto);
         return new ResponseEntity<>(booked, HttpStatus.CREATED);
     }
