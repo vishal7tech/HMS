@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import api from '../../services/api';
 import toast from 'react-hot-toast';
-import { CalendarDays, Clock, Users, Search, X, Check, AlertCircle } from 'lucide-react';
+import { CalendarDays, Users, X } from 'lucide-react';
 
 interface Doctor {
   id: number;
@@ -79,7 +79,7 @@ const PatientAppointments = () => {
                 // Note: patientId will be set automatically by the backend for patients
             };
             
-            const response = await api.post('/appointments', requestData);
+            await api.post('/appointments', requestData);
             toast.success('Appointment booked successfully');
             
             // Refresh appointments list

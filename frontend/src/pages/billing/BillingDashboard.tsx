@@ -124,7 +124,7 @@ const BillingDashboard = () => {
             <div>
               <p className="text-sm font-medium text-gray-600">Today's Billing</p>
               <p className="text-2xl font-bold text-gray-900 mt-1">
-                ${billingStats.todayBilling.toLocaleString()}
+                ₹{billingStats.todayBilling.toLocaleString()}
               </p>
               <div className="flex items-center mt-2 text-xs text-green-600">
                 <TrendingUp className="w-3 h-3 mr-1" />
@@ -145,7 +145,7 @@ const BillingDashboard = () => {
                 {billingStats.pendingCount}
               </p>
               <p className="text-xs text-gray-500 mt-1">
-                ${billingStats.pendingAmount.toLocaleString()} pending
+                ₹{billingStats.pendingAmount.toLocaleString()} pending
               </p>
             </div>
             <div className="bg-orange-100 p-3 rounded-lg">
@@ -159,7 +159,7 @@ const BillingDashboard = () => {
             <div>
               <p className="text-sm font-medium text-gray-600">Total Revenue</p>
               <p className="text-2xl font-bold text-green-600 mt-1">
-                ${billingStats.totalRevenue.toLocaleString()}
+                ₹{billingStats.totalRevenue.toLocaleString()}
               </p>
               <p className="text-xs text-gray-500 mt-1">This month</p>
             </div>
@@ -177,7 +177,7 @@ const BillingDashboard = () => {
                 {billingStats.overdueCount}
               </p>
               <p className="text-xs text-gray-500 mt-1">
-                ${billingStats.overdueAmount.toLocaleString()} overdue
+                ₹{billingStats.overdueAmount.toLocaleString()} overdue
               </p>
             </div>
             <div className="bg-red-100 p-3 rounded-lg">
@@ -224,7 +224,7 @@ const BillingDashboard = () => {
             <div>
               <p className="text-sm font-medium text-gray-600">Paid Amount</p>
               <p className="text-2xl font-bold text-green-600 mt-1">
-                ${billingStats.paidAmount.toLocaleString()}
+                ₹{billingStats.paidAmount.toLocaleString()}
               </p>
               <p className="text-xs text-gray-500 mt-1">This month</p>
             </div>
@@ -278,7 +278,7 @@ const BillingDashboard = () => {
                       <div className="text-sm text-gray-900">{transaction.patientName}</div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm font-medium text-gray-900">${(transaction.amount || 0).toFixed(2)}</div>
+                      <div className="text-sm font-medium text-gray-900">₹{(transaction.amount || 0).toFixed(2)}</div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="text-sm text-gray-900">{transaction.paymentMethod}</div>

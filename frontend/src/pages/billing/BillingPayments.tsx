@@ -263,7 +263,7 @@ const BillingPayments = () => {
                 {paymentStats.todayPayments}
               </p>
               <p className="text-xs text-gray-500 mt-1">
-                ${paymentStats.totalAmount.toLocaleString()} total
+                ₹{paymentStats.totalAmount.toLocaleString()} total
               </p>
             </div>
             <div className="bg-blue-100 p-3 rounded-lg">
@@ -280,7 +280,7 @@ const BillingPayments = () => {
                 {paymentStats.pendingPayments}
               </p>
               <p className="text-xs text-gray-500 mt-1">
-                ${paymentStats.pendingAmount.toLocaleString()} pending
+                ₹{paymentStats.pendingAmount.toLocaleString()} pending
               </p>
             </div>
             <div className="bg-orange-100 p-3 rounded-lg">
@@ -297,7 +297,7 @@ const BillingPayments = () => {
                 {paymentStats.completedPayments}
               </p>
               <p className="text-xs text-gray-500 mt-1">
-                ${paymentStats.completedAmount.toLocaleString()} received
+                ₹{paymentStats.completedAmount.toLocaleString()} received
               </p>
             </div>
             <div className="bg-green-100 p-3 rounded-lg">
@@ -314,7 +314,7 @@ const BillingPayments = () => {
                 {paymentStats.failedPayments}
               </p>
               <p className="text-xs text-gray-500 mt-1">
-                ${paymentStats.refundedAmount.toLocaleString()} refunded
+                ₹{paymentStats.refundedAmount.toLocaleString()} refunded
               </p>
             </div>
             <div className="bg-red-100 p-3 rounded-lg">
@@ -402,7 +402,7 @@ const BillingPayments = () => {
                     </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm font-medium text-gray-900">${(payment.amount || 0).toFixed(2)}</div>
+                    <div className="text-sm font-medium text-gray-900">₹{(payment.amount || 0).toFixed(2)}</div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="flex items-center">
@@ -540,7 +540,7 @@ const BillingPayments = () => {
                 <div className="bg-gray-50 p-4 rounded-lg space-y-2">
                   <div className="flex justify-between">
                     <span className="text-gray-600">Amount:</span>
-                    <span className="font-medium">${(selectedPayment.amount || 0).toFixed(2)}</span>
+                    <span className="font-medium">₹{(selectedPayment.amount || 0).toFixed(2)}</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-gray-600">Payment Method:</span>

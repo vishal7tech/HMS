@@ -1,0 +1,28 @@
+HOSPITAL MANAGEMENT SYSTEM INVOICE
+
+=====================================
+
+Invoice Number: INV-20260404-551CE3C6
+Date: 2026-04-04 14:13
+
+PATIENT INFORMATION
+-----------------
+Name: Patient1 Patient1
+ID: 2
+
+APPOINTMENT INFORMATION
+-----------------------
+Appointment ID: 9
+Doctor: Doctor1 Doctor1
+
+BILLING DETAILS
+---------------
+Consultation Fee: ₹500.00
+Tax (18%): ₹90.0000
+Total Amount: ₹590.0000
+
+Payment Method: CASH
+Status: PENDING
+
+=====================================
+Thank you for choosing our hospital.

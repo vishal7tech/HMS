@@ -20,6 +20,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.time.format.DateTimeFormatter;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -33,6 +34,14 @@ public class InvoiceService {
     private final AppointmentRepository appointmentRepository;
     private final PdfGenerationService pdfGenerationService;
     private final AuditService auditService;
+    
+    private static final DateTimeFormatter INVOICE_DATE_FORMAT = DateTimeFormatter.ofPattern("yyyyMMdd");
+    
+    private String generateInvoiceNumber() {
+        String datePart = LocalDate.now().format(INVOICE_DATE_FORMAT);
+        String randomPart = UUID.randomUUID().toString().substring(0, 8).toUpperCase();
+        return "INV-" + datePart + "-" + randomPart;
+    }
 
     @Transactional
     public InvoiceResponseDTO createInvoice(InvoiceRequestDTO dto) {
@@ -50,7 +59,7 @@ public class InvoiceService {
                 .tax(dto.getAmount().multiply(new BigDecimal("0.18")))
                 .totalAmount(dto.getAmount().add(dto.getAmount().multiply(new BigDecimal("0.18"))))
                 .status(PaymentStatus.PENDING)
-                .invoiceNumber("INV-" + UUID.randomUUID().toString().substring(0, 8).toUpperCase())
+                .invoiceNumber(generateInvoiceNumber())
                 .dueDate(LocalDate.now().plusDays(7))
                 .paymentMethod("CASH")
                 .build();
@@ -111,7 +120,7 @@ public class InvoiceService {
                 .tax(tax)
                 .totalAmount(totalAmount)
                 .status(PaymentStatus.PENDING)
-                .invoiceNumber("INV-" + UUID.randomUUID().toString().substring(0, 8).toUpperCase())
+                .invoiceNumber(generateInvoiceNumber())
                 .dueDate(LocalDate.now().plusDays(7))
                 .paymentMethod("CASH")
                 .build();

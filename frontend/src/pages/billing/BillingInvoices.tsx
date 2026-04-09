@@ -8,7 +8,7 @@ import {
   Trash2,
   Download,
   CreditCard,
-  DollarSign,
+  IndianRupee,
   Receipt,
   FileText,
   User,
@@ -100,18 +100,65 @@ const BillingInvoices = () => {
 
   const handleDownloadPdf = async (invoiceId: number, invoiceNum: string) => {
     try {
-      const response = await api.get(`/invoices/${invoiceId}/pdf`, { responseType: 'blob' });
-      const url = window.URL.createObjectURL(new Blob([response.data]));
-      const link = document.createElement('a');
-      link.href = url;
-      link.setAttribute('download', `${invoiceNum}.pdf`);
-      document.body.appendChild(link);
-      link.click();
-      link.remove();
-      toast.success('PDF downloaded successfully');
-    } catch (error) {
+      console.log('Attempting to download PDF for invoice:', invoiceId, invoiceNum);
+      
+      // Add more detailed error handling
+      const response = await api.get(`/invoices/${invoiceId}/pdf`, { 
+        responseType: 'blob',
+        timeout: 30000 // 30 second timeout
+      });
+      
+      console.log('PDF download response:', response.status, response.headers);
+      
+      // Check if we got a valid response
+      if (response.status === 200 && response.data) {
+        const url = window.URL.createObjectURL(new Blob([response.data]));
+        const link = document.createElement('a');
+        link.href = url;
+        
+        // Determine file extension based on content type
+        let fileName = invoiceNum + '.pdf';
+        const contentType = response.headers['content-type'];
+        
+        if (contentType && contentType.includes('text/plain')) {
+          fileName = invoiceNum + '.txt';
+        } else if (contentType && contentType.includes('text/html')) {
+          fileName = invoiceNum + '.html';
+        }
+        
+        link.setAttribute('download', fileName);
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+        window.URL.revokeObjectURL(url);
+        
+        toast.success(`${fileName} downloaded successfully`);
+      } else {
+        throw new Error(`Invalid response: ${response.status}`);
+      }
+    } catch (error: any) {
       console.error('Failed to download PDF:', error);
-      toast.error('Failed to download PDF');
+      
+      // Provide more specific error messages
+      let errorMessage = 'Failed to download PDF';
+      
+      if (error.response) {
+        if (error.response.status === 403) {
+          errorMessage = 'Access denied. Please check your permissions.';
+        } else if (error.response.status === 404) {
+          errorMessage = 'Invoice not found or PDF not generated yet.';
+        } else if (error.response.status === 500) {
+          errorMessage = 'Server error. Please try again later.';
+        } else {
+          errorMessage = `Server error (${error.response.status})`;
+        }
+      } else if (error.code === 'ECONNABORTED') {
+        errorMessage = 'Download timed out. Please try again.';
+      } else if (error.message) {
+        errorMessage = error.message;
+      }
+      
+      toast.error(errorMessage);
     }
   };
 
@@ -157,10 +204,10 @@ const BillingInvoices = () => {
   const getPaymentMethodIcon = (method: string) => {
     switch (method) {
       case 'CARD': return <CreditCard className="w-4 h-4" />;
-      case 'CASH': return <DollarSign className="w-4 h-4" />;
+      case 'CASH': return <IndianRupee className="w-4 h-4" />;
       case 'UPI': return <Receipt className="w-4 h-4" />;
       case 'INSURANCE': return <FileText className="w-4 h-4" />;
-      default: return <DollarSign className="w-4 h-4" />;
+      default: return <IndianRupee className="w-4 h-4" />;
     }
   };
 
@@ -293,9 +340,9 @@ const BillingInvoices = () => {
                     </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm font-medium text-gray-900">${(invoice.totalAmount || 0).toFixed(2)}</div>
+                    <div className="text-sm font-medium text-gray-900">₹{(invoice.totalAmount || 0).toFixed(2)}</div>
                     {invoice.tax > 0 && (
-                      <div className="text-xs text-gray-500">Tax: ${(invoice.tax || 0).toFixed(2)}</div>
+                      <div className="text-xs text-gray-500">Tax: ₹{(invoice.tax || 0).toFixed(2)}</div>
                     )}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
@@ -495,15 +542,15 @@ const BillingInvoices = () => {
               <div className="space-y-2">
                 <div className="flex justify-between">
                   <span className="text-gray-600">Subtotal:</span>
-                  <span className="font-medium">${(selectedInvoice.amount || 0).toFixed(2)}</span>
+                  <span className="font-medium">₹{(selectedInvoice.amount || 0).toFixed(2)}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-gray-600">Tax:</span>
-                  <span className="font-medium">${(selectedInvoice.tax || 0).toFixed(2)}</span>
+                  <span className="font-medium">₹{(selectedInvoice.tax || 0).toFixed(2)}</span>
                 </div>
                 <div className="flex justify-between text-lg font-bold">
                   <span>Total:</span>
-                  <span>${(selectedInvoice.totalAmount || 0).toFixed(2)}</span>
+                  <span>₹{(selectedInvoice.totalAmount || 0).toFixed(2)}</span>
                 </div>
               </div>
             </div>

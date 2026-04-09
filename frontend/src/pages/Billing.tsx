@@ -203,6 +203,70 @@ const Billing = () => {
     }
   };
 
+  const handleDownloadPdf = async (invoiceId: number, invoiceNum: string) => {
+    try {
+      console.log('Attempting to download PDF for invoice:', invoiceId, invoiceNum);
+      
+      // Add more detailed error handling
+      const response = await api.get(`/invoices/${invoiceId}/pdf`, { 
+        responseType: 'blob',
+        timeout: 30000 // 30 second timeout
+      });
+      
+      console.log('PDF download response:', response.status, response.headers);
+      
+      // Check if we got a valid response
+      if (response.status === 200 && response.data) {
+        const url = window.URL.createObjectURL(new Blob([response.data]));
+        const link = document.createElement('a');
+        link.href = url;
+        
+        // Determine file extension based on content type
+        let fileName = invoiceNum + '.pdf';
+        const contentType = response.headers['content-type'];
+        
+        if (contentType && contentType.includes('text/plain')) {
+          fileName = invoiceNum + '.txt';
+        } else if (contentType && contentType.includes('text/html')) {
+          fileName = invoiceNum + '.html';
+        }
+        
+        link.setAttribute('download', fileName);
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+        window.URL.revokeObjectURL(url);
+        
+        toast.success(`${fileName} downloaded successfully`);
+      } else {
+        throw new Error(`Invalid response: ${response.status}`);
+      }
+    } catch (error: any) {
+      console.error('Failed to download PDF:', error);
+      
+      // Provide more specific error messages
+      let errorMessage = 'Failed to download PDF';
+      
+      if (error.response) {
+        if (error.response.status === 403) {
+          errorMessage = 'Access denied. Please check your permissions.';
+        } else if (error.response.status === 404) {
+          errorMessage = 'Invoice not found or PDF not generated yet.';
+        } else if (error.response.status === 500) {
+          errorMessage = 'Server error. Please try again later.';
+        } else {
+          errorMessage = `Server error (${error.response.status})`;
+        }
+      } else if (error.code === 'ECONNABORTED') {
+        errorMessage = 'Download timed out. Please try again.';
+      } else if (error.message) {
+        errorMessage = error.message;
+      }
+      
+      toast.error(errorMessage);
+    }
+  };
+
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'PENDING': return 'bg-yellow-100 text-yellow-800 border-yellow-200';
@@ -305,7 +369,7 @@ const Billing = () => {
                 <div>
                   <p className="text-sm font-medium text-gray-600">Today's Billing</p>
                   <p className="text-2xl font-bold text-gray-900 mt-1">
-                    ${billingStats.todayBilling.toLocaleString()}
+                    ₹{billingStats.todayBilling.toLocaleString()}
                   </p>
                   <div className="flex items-center mt-2 text-xs text-green-600">
                     <TrendingUp className="w-3 h-3 mr-1" />
@@ -326,7 +390,7 @@ const Billing = () => {
                     {billingStats.pendingCount}
                   </p>
                   <p className="text-xs text-gray-500 mt-1">
-                    ${billingStats.pendingAmount.toLocaleString()} pending
+                    ₹{billingStats.pendingAmount.toLocaleString()} pending
                   </p>
                 </div>
                 <div className="bg-orange-100 p-3 rounded-lg">
@@ -340,7 +404,7 @@ const Billing = () => {
                 <div>
                   <p className="text-sm font-medium text-gray-600">Paid</p>
                   <p className="text-2xl font-bold text-green-600 mt-1">
-                    ${billingStats.paidAmount.toLocaleString()}
+                    ₹{billingStats.paidAmount.toLocaleString()}
                   </p>
                   <p className="text-xs text-gray-500 mt-1">This month</p>
                 </div>
@@ -358,7 +422,7 @@ const Billing = () => {
                     {billingStats.overdueCount}
                   </p>
                   <p className="text-xs text-gray-500 mt-1">
-                    ${billingStats.overdueAmount.toLocaleString()} overdue
+                    ₹{billingStats.overdueAmount.toLocaleString()} overdue
                   </p>
                 </div>
                 <div className="bg-red-100 p-3 rounded-lg">
@@ -527,9 +591,9 @@ const Billing = () => {
                       <div className="text-sm text-gray-900">Appointment ID: {invoice.appointmentId}</div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm font-medium text-gray-900">${(invoice.totalAmount || 0).toFixed(2)}</div>
+                      <div className="text-sm font-medium text-gray-900">₹{(invoice.totalAmount || 0).toFixed(2)}</div>
                       {invoice.tax > 0 && (
-                        <div className="text-xs text-gray-500">Tax: ${(invoice.tax || 0).toFixed(2)}</div>
+                        <div className="text-xs text-gray-500">Tax: ₹{(invoice.tax || 0).toFixed(2)}</div>
                       )}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
@@ -664,15 +728,15 @@ const Billing = () => {
               <div className="space-y-2">
                 <div className="flex justify-between">
                   <span className="text-gray-600">Subtotal:</span>
-                  <span className="font-medium">${(selectedInvoice.amount || 0).toFixed(2)}</span>
+                  <span className="font-medium">₹{(selectedInvoice.amount || 0).toFixed(2)}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-gray-600">Tax:</span>
-                  <span className="font-medium">${(selectedInvoice.tax || 0).toFixed(2)}</span>
+                  <span className="font-medium">₹{(selectedInvoice.tax || 0).toFixed(2)}</span>
                 </div>
                 <div className="flex justify-between text-lg font-bold">
                   <span>Total:</span>
-                  <span>${(selectedInvoice.totalAmount || 0).toFixed(2)}</span>
+                  <span>₹{(selectedInvoice.totalAmount || 0).toFixed(2)}</span>
                 </div>
               </div>
             </div>
@@ -717,7 +781,10 @@ const Billing = () => {
               >
                 Close
               </button>
-              <button className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700">
+              <button 
+                onClick={() => handleDownloadPdf(selectedInvoice.id, selectedInvoice.invoiceNumber)}
+                className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700"
+              >
                 Download PDF
               </button>
             </div>

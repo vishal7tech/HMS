@@ -47,7 +47,7 @@ const ReceptionistDashboard: React.FC = () => {
             </div>
             <div className="ml-4">
               <p className="text-sm font-medium text-gray-600">Today's Revenue</p>
-              <p className="text-2xl font-bold text-green-600">$12,500</p>
+              <p className="text-2xl font-bold text-green-600">₹12,500</p>
             </div>
           </div>
         </div>

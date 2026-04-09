@@ -75,11 +75,13 @@ public class InvoiceController {
     @PreAuthorize("hasAnyRole('ADMIN', 'RECEPTIONIST', 'DOCTOR', 'PATIENT')")
     public ResponseEntity<Resource> downloadInvoicePdf(@PathVariable Long id) {
         try {
+            log.info("PDF download request for invoice ID: {}", id);
             Invoice invoice = invoiceService.getInvoiceEntityById(id);
 
             // Generate PDF if not exists
             String pdfPath = invoice.getPdfPath();
             if (pdfPath == null || !Files.exists(Paths.get(pdfPath))) {
+                log.info("Generating new PDF for invoice: {}", id);
                 pdfPath = pdfGenerationService.generateInvoicePdf(invoice);
                 invoice.setPdfPath(pdfPath);
                 invoiceService.saveInvoice(invoice);
@@ -95,20 +97,23 @@ public class InvoiceController {
 
             String contentType = Files.probeContentType(path);
             if (contentType == null) {
-                contentType = "application/pdf";
+                contentType = "application/pdf"; // Always serve as PDF
             }
 
+            String fileName = invoice.getInvoiceNumber() + ".pdf"; // Always use .pdf extension
+
+            log.info("Serving PDF file: {} with content type: {}", fileName, contentType);
             return ResponseEntity.ok()
                     .contentType(MediaType.parseMediaType(contentType))
                     .header(HttpHeaders.CONTENT_DISPOSITION,
-                            "attachment; filename=\"" + invoice.getInvoiceNumber() + ".pdf\"")
+                            "attachment; filename=\"" + fileName + "\"")
                     .body(resource);
 
         } catch (IOException e) {
             log.error("Error downloading PDF for invoice {}", id, e);
             return ResponseEntity.internalServerError().build();
         } catch (Exception e) {
-            log.error("Error processing invoice PDF request", e);
+            log.error("Error processing invoice PDF request for invoice {}", id, e);
             return ResponseEntity.internalServerError().build();
         }
     }

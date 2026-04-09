@@ -134,7 +134,16 @@ export class ApiUtils {
   }
 
   static getStatusBadgeClass(status: string): string {
-    const color = this.getStatusColor(status);
-    return `bg-${color}-100 text-${color}-800 border-${color}-200`;
+    const statusUpper = status.toUpperCase();
+    const classMap: Record<string, string> = {
+      'SCHEDULED': 'bg-blue-100 text-blue-800 border-blue-200',
+      'COMPLETED': 'bg-green-100 text-green-800 border-green-200',
+      'CANCELLED': 'bg-red-100 text-red-800 border-red-200',
+      'NO_SHOW': 'bg-orange-100 text-orange-800 border-orange-200',
+      'PENDING': 'bg-yellow-100 text-yellow-800 border-yellow-200',
+      'PAID': 'bg-green-100 text-green-800 border-green-200',
+      'UNPAID': 'bg-red-100 text-red-800 border-red-200',
+    };
+    return classMap[statusUpper] || 'bg-gray-100 text-gray-800 border-gray-200';
   }
 }

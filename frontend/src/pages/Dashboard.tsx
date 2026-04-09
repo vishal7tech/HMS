@@ -4,6 +4,8 @@ import { useAuth } from '../contexts/AuthContext';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import { Client } from '@stomp/stompjs';
 import SockJS from 'sockjs-client';
+import toast from 'react-hot-toast';
+import { Calendar, Trash2 } from 'lucide-react';
 
 interface DashboardStats {
   totalPatients: number;
@@ -17,11 +19,22 @@ interface DashboardStats {
   paidBills: number;
 }
 
+interface Appointment {
+  id: number;
+  patient: { id: number; name: string; email: string };
+  doctor: { id: number; name: string; specialization: string };
+  dateTime: string;
+  reason: string;
+  status: string;
+}
+
 const Dashboard = () => {
   const [stats, setStats] = useState<DashboardStats | null>(null);
   const [chartData, setChartData] = useState<any[]>([]);
   const [liveAvailability, setLiveAvailability] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [showGenerateInvoiceModal, setShowGenerateInvoiceModal] = useState(false);
+  const [completedAppointments, setCompletedAppointments] = useState<Appointment[]>([]);
   const { user } = useAuth();
 
   const role = user?.role?.replace('ROLE_', '') || 'USER';
@@ -80,6 +93,35 @@ const Dashboard = () => {
     }
   };
 
+  const fetchCompletedAppointments = async () => {
+    try {
+      const response = await api.get('/billing/completed-appointments');
+      setCompletedAppointments(response.data || []);
+    } catch (error) {
+      console.error('Failed to fetch completed appointments:', error);
+      toast.error('Failed to load completed appointments');
+    }
+  };
+
+  const handleGenerateBill = async (appointmentId: number) => {
+    try {
+      await api.post(`/invoices/generate/${appointmentId}`);
+      toast.success('Invoice generated successfully');
+      fetchCompletedAppointments();
+      fetchData(); // Refresh stats
+      setShowGenerateInvoiceModal(false);
+    } catch (error) {
+      console.error('Failed to generate invoice:', error);
+      toast.error('Failed to generate invoice');
+    }
+  };
+
+  useEffect(() => {
+    if (showGenerateInvoiceModal) {
+      fetchCompletedAppointments();
+    }
+  }, [showGenerateInvoiceModal]);
+
   if (loading) return <div className="p-8 h-64 flex items-center justify-center text-lg">Loading dashboard...</div>;
   if (!stats) return <div className="p-8 text-red-500">Failed to load dashboard data</div>;
 
@@ -111,7 +153,7 @@ const Dashboard = () => {
             <StatCard title="Total Patients" value={stats.totalPatients.toLocaleString()} color="bg-blue-600" icon="👥" />
             <StatCard title="Total Doctors" value={stats.totalDoctors.toLocaleString()} color="bg-green-600" icon="👨‍⚕️" />
             <StatCard title="Today's Appointments" value={stats.appointmentsToday.toLocaleString()} color="bg-purple-600" icon="📅" />
-            <StatCard title="Total Revenue" value={`$${stats.totalRevenue.toLocaleString()}`} color="bg-yellow-600" icon="💰" />
+            <StatCard title="Total Revenue" value={`₹${stats.totalRevenue.toLocaleString()}`} color="bg-yellow-600" icon="💰" />
           </div>
 
           <div className="bg-white p-6 rounded-lg shadow-md mb-8">
@@ -124,7 +166,7 @@ const Dashboard = () => {
                   <YAxis />
                   <Tooltip />
                   <Legend />
-                  <Line type="monotone" dataKey="revenue" stroke="#eab308" activeDot={{ r: 8 }} name="Revenue ($)" />
+                  <Line type="monotone" dataKey="revenue" stroke="#eab308" activeDot={{ r: 8 }} name="Revenue (₹)" />
                   <Line type="monotone" dataKey="appointments" stroke="#9333ea" name="Appointments" />
                 </LineChart>
               </ResponsiveContainer>
@@ -146,7 +188,10 @@ const Dashboard = () => {
                   <span className="text-3xl mb-2">📅</span>
                   Book Appointment
                 </button>
-                <button className="bg-green-50 border border-green-200 hover:bg-green-100 text-green-700 font-semibold py-4 rounded-lg flex flex-col items-center justify-center transition-colors">
+                <button 
+                  onClick={() => setShowGenerateInvoiceModal(true)}
+                  className="bg-green-50 border border-green-200 hover:bg-green-100 text-green-700 font-semibold py-4 rounded-lg flex flex-col items-center justify-center transition-colors"
+                >
                   <span className="text-3xl mb-2">💳</span>
                   Generate Invoice
                 </button>
@@ -186,6 +231,76 @@ const Dashboard = () => {
                 ))
               )}
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* Generate Invoice Modal */}
+      {showGenerateInvoiceModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+          <div className="bg-white rounded-xl p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+            <div className="flex justify-between items-start mb-6">
+              <div>
+                <h2 className="text-xl font-bold text-gray-900">Generate Invoice</h2>
+                <p className="text-sm text-gray-500 mt-1">Create invoice from completed appointment</p>
+              </div>
+              <button
+                onClick={() => setShowGenerateInvoiceModal(false)}
+                className="text-gray-400 hover:text-gray-600"
+              >
+                <Trash2 className="w-6 h-6" />
+              </button>
+            </div>
+
+            {completedAppointments.length === 0 ? (
+              <div className="text-center py-12">
+                <div className="bg-gray-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <Calendar className="w-8 h-8 text-gray-400" />
+                </div>
+                <h3 className="text-lg font-medium text-gray-900 mb-2">No completed appointments</h3>
+                <p className="text-gray-600">Completed appointments will appear here for invoice generation</p>
+              </div>
+            ) : (
+              <div className="overflow-x-auto">
+                <table className="w-full">
+                  <thead className="bg-gray-50">
+                    <tr>
+                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Patient</th>
+                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Doctor</th>
+                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Date</th>
+                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Action</th>
+                    </tr>
+                  </thead>
+                  <tbody className="bg-white divide-y divide-gray-200">
+                    {completedAppointments.map((appointment) => (
+                      <tr key={appointment.id} className="hover:bg-gray-50">
+                        <td className="px-4 py-4 whitespace-nowrap">
+                          <div className="text-sm font-medium text-gray-900">{appointment.patient?.name || 'N/A'}</div>
+                          <div className="text-sm text-gray-500">{appointment.patient?.email || 'N/A'}</div>
+                        </td>
+                        <td className="px-4 py-4 whitespace-nowrap">
+                          <div className="text-sm text-gray-900">{appointment.doctor?.name || 'N/A'}</div>
+                          <div className="text-sm text-gray-500">{appointment.doctor?.specialization || 'N/A'}</div>
+                        </td>
+                        <td className="px-4 py-4 whitespace-nowrap">
+                          <div className="text-sm text-gray-500">
+                            {new Date(appointment.dateTime).toLocaleDateString()}
+                          </div>
+                        </td>
+                        <td className="px-4 py-4 whitespace-nowrap">
+                          <button
+                            onClick={() => handleGenerateBill(appointment.id)}
+                            className="text-purple-600 hover:text-purple-800 text-sm font-medium"
+                          >
+                            Generate Invoice
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
           </div>
         </div>
       )}

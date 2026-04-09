@@ -19,6 +19,7 @@ import RoleBasedDashboardRedirect from './components/RoleBasedDashboardRedirect'
 import PatientDashboard from './pages/patient/PatientDashboard';
 import PatientAppointments from './pages/patient/PatientAppointments';
 import PatientHistory from './pages/patient/PatientHistory';
+import PatientProfile from './pages/patient/PatientProfile';
 
 // Doctor Portal
 import DoctorDashboard from './pages/doctor/DoctorDashboard';
@@ -96,6 +97,7 @@ function App() {
                     <Route path="patient-dashboard" element={<PatientDashboard />} />
                     <Route path="patient-appointments" element={<PatientAppointments />} />
                     <Route path="patient-history" element={<PatientHistory />} />
+                    <Route path="patient/profile" element={<PatientProfile />} />
                   </Route>
 
                   {/* Doctor Dashboard */}

@@ -6,6 +6,7 @@ import com.vishal.hms_backend.entity.Appointment;
 import com.vishal.hms_backend.entity.AppointmentStatus;
 import com.vishal.hms_backend.entity.DoctorProfile;
 import com.vishal.hms_backend.entity.PatientProfile;
+import com.vishal.hms_backend.event.AppointmentCompletedEvent;
 import com.vishal.hms_backend.exception.ConflictException;
 import com.vishal.hms_backend.repository.AppointmentRepository;
 import com.vishal.hms_backend.repository.DoctorProfileRepository;
@@ -15,6 +16,7 @@ import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Duration;
@@ -34,6 +36,7 @@ public class AppointmentService {
         private final EmailService emailService;
         private final AuditService auditService;
         private final WebSocketNotificationService webSocketNotificationService;
+        private final ApplicationEventPublisher eventPublisher;
 
         private static final Duration DEFAULT_DURATION = Duration.ofMinutes(30);
 
@@ -214,6 +217,9 @@ public class AppointmentService {
                 }
 
                 webSocketNotificationService.notifyAppointmentCompleted(saved);
+                
+                // Publish event for automatic invoice generation
+                eventPublisher.publishEvent(new AppointmentCompletedEvent(this, appointmentId));
         }
 
         @Transactional(readOnly = true)
