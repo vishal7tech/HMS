@@ -145,7 +145,7 @@ const AdminDashboard: React.FC = () => {
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm font-medium text-gray-600">Monthly Revenue</p>
-              <p className="text-2xl font-bold text-gray-900 mt-2">${currentStats.monthlyRevenue}</p>
+              <p className="text-2xl font-bold text-gray-900 mt-2">₹{currentStats.monthlyRevenue}</p>
             </div>
             <div className="p-3 bg-green-100 rounded-lg">
               <DollarSign className="w-6 h-6 text-green-600" />
@@ -157,7 +157,7 @@ const AdminDashboard: React.FC = () => {
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm font-medium text-gray-600">Outstanding Payments</p>
-              <p className="text-2xl font-bold text-gray-900 mt-2">${currentStats.outstandingPayments}</p>
+              <p className="text-2xl font-bold text-gray-900 mt-2">₹{currentStats.outstandingPayments}</p>
             </div>
             <div className="p-3 bg-yellow-100 rounded-lg">
               <CreditCard className="w-6 h-6 text-yellow-600" />

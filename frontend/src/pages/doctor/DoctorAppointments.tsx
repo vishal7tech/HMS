@@ -12,6 +12,12 @@ interface Patient {
   name: string;
   email: string;
   phone?: string;
+  address?: string;
+  dateOfBirth?: string;
+  gender?: string;
+  bloodGroup?: string;
+  contactNumber?: string;
+  phoneNumber?: string;
 }
 
 interface Appointment {
@@ -54,6 +60,7 @@ const DoctorAppointments = () => {
   const [showRescheduleModal, setShowRescheduleModal] = useState(false);
   const [showPrescriptionModal, setShowPrescriptionModal] = useState(false);
   const [showPatientProfileModal, setShowPatientProfileModal] = useState(false);
+  const [loadingPatientProfile, setLoadingPatientProfile] = useState(false);
 
   const [rescheduleData, setRescheduleData] = useState({
     appointmentId: 0,
@@ -101,12 +108,28 @@ const DoctorAppointments = () => {
   };
 
   const fetchPatientDetails = async (patientId: number) => {
+    setLoadingPatientProfile(true);
     try {
-      const response = await api.get(`/patients/${patientId}`);
+      // First try to get individual patient details
+      let response;
+      try {
+        response = await api.get(`/patients/${patientId}`);
+      } catch (individualError) {
+        // If individual endpoint fails, fetch all patients and filter
+        console.log('Individual patient fetch failed, trying all patients approach');
+        const allPatientsResponse = await api.get('/patients');
+        const patient = allPatientsResponse.data.find((p: any) => p.id === patientId);
+        if (!patient) {
+          throw new Error('Patient not found');
+        }
+        response = { data: patient };
+      }
       setSelectedPatient(response.data);
     } catch (error: any) {
       console.error('Failed to fetch patient details:', error);
       toast.error('Failed to fetch patient details');
+    } finally {
+      setLoadingPatientProfile(false);
     }
   };
 
@@ -697,7 +720,7 @@ const DoctorAppointments = () => {
       )}
 
       {/* Patient Profile Modal */}
-      {showPatientProfileModal && selectedPatient && (
+      {showPatientProfileModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
           <div className="bg-white rounded-lg p-6 w-full max-w-md">
             <div className="flex justify-between items-center mb-4">
@@ -710,28 +733,72 @@ const DoctorAppointments = () => {
               </button>
             </div>
             
-            <div className="flex items-center mb-6">
-              <div className="h-16 w-16 rounded-full bg-blue-500 flex items-center justify-center">
-                <User className="h-8 w-8 text-white" />
+            {loadingPatientProfile ? (
+              <div className="flex items-center justify-center py-8">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+                <span className="ml-3 text-gray-600">Loading patient details...</span>
               </div>
-              <div className="ml-4">
-                <h3 className="text-lg font-semibold text-gray-900">{selectedPatient.name}</h3>
-                <p className="text-sm text-gray-500">Patient ID: {selectedPatient.id}</p>
-              </div>
-            </div>
-            
-            <div className="space-y-3">
-              <div>
-                <label className="text-sm font-medium text-gray-500">Email</label>
-                <p className="text-gray-900">{selectedPatient.email}</p>
-              </div>
-              {selectedPatient.phone && (
-                <div>
-                  <label className="text-sm font-medium text-gray-500">Phone</label>
-                  <p className="text-gray-900">{selectedPatient.phone}</p>
+            ) : selectedPatient ? (
+              <>
+                <div className="flex items-center mb-6">
+                  <div className="h-16 w-16 rounded-full bg-blue-500 flex items-center justify-center">
+                    <User className="h-8 w-8 text-white" />
+                  </div>
+                  <div className="ml-4">
+                    <h3 className="text-lg font-semibold text-gray-900">{selectedPatient.name}</h3>
+                    <p className="text-sm text-gray-500">Patient ID: {selectedPatient.id}</p>
+                  </div>
                 </div>
-              )}
-            </div>
+                
+                <div className="space-y-3">
+                  <div>
+                    <label className="text-sm font-medium text-gray-500">Email</label>
+                    <p className="text-gray-900">{selectedPatient.email}</p>
+                  </div>
+                  
+                  {(selectedPatient.phone || selectedPatient.contactNumber || selectedPatient.phoneNumber) && (
+                    <div>
+                      <label className="text-sm font-medium text-gray-500">Phone</label>
+                      <p className="text-gray-900">
+                        {selectedPatient.phone || selectedPatient.contactNumber || selectedPatient.phoneNumber}
+                      </p>
+                    </div>
+                  )}
+                  
+                  {selectedPatient.address && (
+                    <div>
+                      <label className="text-sm font-medium text-gray-500">Address</label>
+                      <p className="text-gray-900">{selectedPatient.address}</p>
+                    </div>
+                  )}
+                  
+                  {selectedPatient.dateOfBirth && (
+                    <div>
+                      <label className="text-sm font-medium text-gray-500">Date of Birth</label>
+                      <p className="text-gray-900">{selectedPatient.dateOfBirth}</p>
+                    </div>
+                  )}
+                  
+                  {selectedPatient.gender && (
+                    <div>
+                      <label className="text-sm font-medium text-gray-500">Gender</label>
+                      <p className="text-gray-900">{selectedPatient.gender}</p>
+                    </div>
+                  )}
+                  
+                  {selectedPatient.bloodGroup && (
+                    <div>
+                      <label className="text-sm font-medium text-gray-500">Blood Group</label>
+                      <p className="text-gray-900">{selectedPatient.bloodGroup}</p>
+                    </div>
+                  )}
+                </div>
+              </>
+            ) : (
+              <div className="text-center py-8">
+                <p className="text-gray-500">Patient details not available</p>
+              </div>
+            )}
             
             <div className="flex justify-end mt-6">
               <button
