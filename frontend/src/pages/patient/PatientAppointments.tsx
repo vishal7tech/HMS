@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import api from '../../services/api';
 import toast from 'react-hot-toast';
-import { CalendarDays, Users, X } from 'lucide-react';
+import { CalendarDays, Users, X, Clock } from 'lucide-react';
 
 interface Doctor {
   id: number;
@@ -25,15 +25,27 @@ interface Appointment {
   notes: string;
 }
 
+interface AvailabilitySlot {
+  id: number;
+  doctorId: number;
+  date: string;
+  startTime: string;
+  endTime: string;
+  isAvailable: boolean;
+}
+
 const PatientAppointments = () => {
     const [appointments, setAppointments] = useState<Appointment[]>([]);
     const [doctors, setDoctors] = useState<Doctor[]>([]);
     const [loading, setLoading] = useState(true);
     const [showModal, setShowModal] = useState(false);
     const [error, setError] = useState<string | null>(null);
+    const [availableSlots, setAvailableSlots] = useState<AvailabilitySlot[]>([]);
+    const [slotsLoading, setSlotsLoading] = useState(false);
     
     const [formData, setFormData] = useState({
         doctorId: '',
+        selectedDate: new Date().toISOString().split('T')[0],
         slotTime: '',
         reason: '',
         notes: ''
@@ -42,11 +54,9 @@ const PatientAppointments = () => {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                // Fetch patient appointments using the correct endpoint
                 const apptRes = await api.get('/appointments/patient/me');
                 setAppointments(apptRes.data);
                 
-                // Fetch available doctors for booking
                 const doctorsRes = await api.get('/doctors');
                 setDoctors(doctorsRes.data);
                 
@@ -61,10 +71,65 @@ const PatientAppointments = () => {
         fetchData();
     }, []);
 
+    const fetchAvailableSlots = async (doctorId: string, date: string) => {
+        if (!doctorId || !date) {
+            setAvailableSlots([]);
+            return;
+        }
+        
+        setSlotsLoading(true);
+        try {
+            const res = await api.get(`/availability/doctor/${doctorId}?date=${date}`);
+            setAvailableSlots(res.data);
+        } catch (err) {
+            console.error('Failed to load available slots', err);
+            setAvailableSlots([]);
+            toast.error('Failed to load available slots');
+        } finally {
+            setSlotsLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        if (showModal) {
+            fetchAvailableSlots(formData.doctorId, formData.selectedDate);
+        }
+    }, [formData.doctorId, formData.selectedDate, showModal]);
+
+    const handleDoctorChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+        const newDoctorId = e.target.value;
+        setFormData({
+            ...formData,
+            doctorId: newDoctorId,
+            slotTime: ''
+        });
+    };
+
+    const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const newDate = e.target.value;
+        setFormData({
+            ...formData,
+            selectedDate: newDate,
+            slotTime: ''
+        });
+    };
+
+    const handleSlotClick = (slot: AvailabilitySlot) => {
+        const dateTime = `${formData.selectedDate}T${slot.startTime}`;
+        setFormData({ ...formData, slotTime: dateTime });
+    };
+
+    const formatTime = (timeStr: string) => {
+        const [hours, minutes] = timeStr.split(':');
+        const hour = parseInt(hours);
+        const ampm = hour >= 12 ? 'PM' : 'AM';
+        const displayHour = hour % 12 || 12;
+        return `${displayHour}:${minutes} ${ampm}`;
+    };
+
     const handleBookAppointment = async (e: React.FormEvent) => {
         e.preventDefault();
         
-        // Client-side validation
         if (!formData.doctorId || !formData.slotTime || !formData.reason) {
             toast.error('Please fill in all required fields');
             return;
@@ -76,17 +141,14 @@ const PatientAppointments = () => {
                 slotTime: formData.slotTime,
                 reason: formData.reason,
                 notes: formData.notes
-                // Note: patientId will be set automatically by the backend for patients
             };
             
             await api.post('/appointments', requestData);
             toast.success('Appointment booked successfully');
             
-            // Refresh appointments list
             const apptRes = await api.get('/appointments/patient/me');
             setAppointments(apptRes.data);
             
-            // Reset form and close modal
             resetForm();
         } catch (error: any) {
             console.error('Failed to book appointment:', error);
@@ -101,7 +163,6 @@ const PatientAppointments = () => {
                 await api.put(`/appointments/${id}/cancel`);
                 toast.success('Appointment cancelled successfully');
                 
-                // Refresh appointments list
                 const apptRes = await api.get('/appointments/patient/me');
                 setAppointments(apptRes.data);
             } catch (error: any) {
@@ -115,11 +176,13 @@ const PatientAppointments = () => {
     const resetForm = () => {
         setFormData({
             doctorId: '',
+            selectedDate: new Date().toISOString().split('T')[0],
             slotTime: '',
             reason: '',
             notes: ''
         });
         setShowModal(false);
+        setAvailableSlots([]);
     };
 
     const getStatusColor = (status: string) => {
@@ -235,7 +298,6 @@ const PatientAppointments = () => {
                 </div>
             )}
 
-            {/* Book Appointment Modal */}
             {showModal && (
                 <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
                     <div className="bg-white rounded-lg p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto">
@@ -259,7 +321,7 @@ const PatientAppointments = () => {
                                     <select
                                         required
                                         value={formData.doctorId}
-                                        onChange={(e) => setFormData({ ...formData, doctorId: e.target.value })}
+                                        onChange={handleDoctorChange}
                                         className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                                     >
                                         <option value="">Choose a doctor...</option>
@@ -270,21 +332,63 @@ const PatientAppointments = () => {
                                         ))}
                                     </select>
                                 </div>
-                                
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                                        <CalendarDays className="inline w-4 h-4 mr-1" />
-                                        Date & Time *
-                                    </label>
-                                    <input
-                                        type="datetime-local"
-                                        required
-                                        value={formData.slotTime}
-                                        onChange={(e) => setFormData({ ...formData, slotTime: e.target.value })}
-                                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                        min={new Date().toISOString().slice(0, 16)}
-                                    />
-                                </div>
+
+                                {formData.doctorId && (
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                                            <CalendarDays className="inline w-4 h-4 mr-1" />
+                                            Select Date *
+                                        </label>
+                                        <input
+                                            type="date"
+                                            required
+                                            value={formData.selectedDate}
+                                            onChange={handleDateChange}
+                                            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                            min={new Date().toISOString().split('T')[0]}
+                                        />
+                                    </div>
+                                )}
+
+                                {formData.doctorId && formData.selectedDate && (
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                                            <Clock className="inline w-4 h-4 mr-1" />
+                                            Available Slots
+                                        </label>
+                                        {slotsLoading ? (
+                                            <div className="flex items-center justify-center py-4">
+                                                <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600"></div>
+                                                <span className="ml-2 text-gray-600">Loading slots...</span>
+                                            </div>
+                                        ) : availableSlots.length > 0 ? (
+                                            <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-2">
+                                                {availableSlots.map((slot) => {
+                                                    const dateTime = `${formData.selectedDate}T${slot.startTime}`;
+                                                    const isSelected = formData.slotTime === dateTime;
+                                                    return (
+                                                        <button
+                                                            key={slot.id}
+                                                            type="button"
+                                                            onClick={() => handleSlotClick(slot)}
+                                                            className={`py-2 px-3 rounded-lg text-sm font-medium transition-all ${
+                                                                isSelected
+                                                                    ? 'bg-blue-600 text-white shadow-md'
+                                                                    : 'bg-white text-gray-700 border-2 border-gray-300 hover:border-blue-500 hover:bg-blue-50'
+                                                            }`}
+                                                        >
+                                                            {formatTime(slot.startTime)}
+                                                        </button>
+                                                    );
+                                                })}
+                                            </div>
+                                        ) : (
+                                            <div className="text-center py-4 text-gray-500 bg-gray-50 rounded-lg">
+                                                No available slots for this date
+                                            </div>
+                                        )}
+                                    </div>
+                                )}
                                 
                                 <div>
                                     <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -324,7 +428,8 @@ const PatientAppointments = () => {
                                 </button>
                                 <button
                                     type="submit"
-                                    className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+                                    disabled={!formData.slotTime}
+                                    className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
                                 >
                                     Book Appointment
                                 </button>

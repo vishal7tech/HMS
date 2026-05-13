@@ -2,8 +2,11 @@ package com.vishal.hms_backend.service;
 
 import com.vishal.hms_backend.dto.AvailabilitySlotRequestDTO;
 import com.vishal.hms_backend.dto.AvailabilitySlotResponseDTO;
+import com.vishal.hms_backend.entity.Appointment;
+import com.vishal.hms_backend.entity.AppointmentStatus;
 import com.vishal.hms_backend.entity.AvailabilitySlot;
 import com.vishal.hms_backend.entity.DoctorProfile;
+import com.vishal.hms_backend.repository.AppointmentRepository;
 import com.vishal.hms_backend.repository.AvailabilitySlotRepository;
 import com.vishal.hms_backend.repository.DoctorProfileRepository;
 import com.vishal.hms_backend.mapper.AvailabilitySlotMapper;
@@ -12,6 +15,8 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -21,6 +26,7 @@ public class AvailabilitySlotService {
 
     private final AvailabilitySlotRepository availabilitySlotRepo;
     private final DoctorProfileRepository doctorProfileRepo;
+    private final AppointmentRepository appointmentRepo;
     private final AvailabilitySlotMapper mapper;
     private final SimpMessagingTemplate messagingTemplate;
 
@@ -43,9 +49,21 @@ public class AvailabilitySlotService {
     }
 
     public List<AvailabilitySlotResponseDTO> getSlotsByDoctorAndDate(Long doctorId, LocalDate date) {
-        return availabilitySlotRepo.findByDoctorIdAndDate(doctorId, date).stream()
+        List<AvailabilitySlot> slots = availabilitySlotRepo.findByDoctorIdAndDate(doctorId, date);
+        
+        // Filter slots that are available and not yet booked
+        return slots.stream()
+                .filter(slot -> Boolean.TRUE.equals(slot.getIsAvailable()))
+                .filter(slot -> !isSlotBooked(doctorId, slot.getDate(), slot.getStartTime(), slot.getEndTime()))
                 .map(mapper::toResponseDto)
                 .collect(Collectors.toList());
+    }
+
+    private boolean isSlotBooked(Long doctorId, LocalDate date, LocalTime startTime, LocalTime endTime) {
+        LocalDateTime slotStart = date.atTime(startTime);
+        LocalDateTime slotEnd = date.atTime(endTime);
+        
+        return appointmentRepo.existsOverlappingAppointment(doctorId, slotStart, slotEnd);
     }
 
     public List<AvailabilitySlotResponseDTO> getAllSlotsByDoctor(Long doctorId) {

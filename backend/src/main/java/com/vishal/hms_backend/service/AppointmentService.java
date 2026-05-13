@@ -4,11 +4,13 @@ import com.vishal.hms_backend.dto.AppointmentRequestDTO;
 import com.vishal.hms_backend.dto.AppointmentResponseDTO;
 import com.vishal.hms_backend.entity.Appointment;
 import com.vishal.hms_backend.entity.AppointmentStatus;
+import com.vishal.hms_backend.entity.AvailabilitySlot;
 import com.vishal.hms_backend.entity.DoctorProfile;
 import com.vishal.hms_backend.entity.PatientProfile;
 import com.vishal.hms_backend.event.AppointmentCompletedEvent;
 import com.vishal.hms_backend.exception.ConflictException;
 import com.vishal.hms_backend.repository.AppointmentRepository;
+import com.vishal.hms_backend.repository.AvailabilitySlotRepository;
 import com.vishal.hms_backend.repository.DoctorProfileRepository;
 import com.vishal.hms_backend.repository.PatientProfileRepository;
 import jakarta.persistence.EntityNotFoundException;
@@ -20,8 +22,11 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Duration;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -33,6 +38,7 @@ public class AppointmentService {
         private final AppointmentRepository appointmentRepo;
         private final PatientProfileRepository patientRepo;
         private final DoctorProfileRepository doctorRepo;
+        private final AvailabilitySlotRepository availabilitySlotRepo;
         private final EmailService emailService;
         private final AuditService auditService;
         private final WebSocketNotificationService webSocketNotificationService;
@@ -55,6 +61,19 @@ public class AppointmentService {
 
                 LocalDateTime start = dto.getSlotTime();
                 LocalDateTime end = start.plus(DEFAULT_DURATION);
+                LocalDate date = start.toLocalDate();
+                LocalTime time = start.toLocalTime();
+
+                // Check if slot is available in AvailabilitySlot
+                Optional<AvailabilitySlot> slotOptional = availabilitySlotRepo
+                        .findByDoctorIdAndDate(doctor.getId(), date)
+                        .stream()
+                        .filter(slot -> slot.getStartTime().equals(time))
+                        .findFirst();
+
+                if (slotOptional.isEmpty() || !Boolean.TRUE.equals(slotOptional.get().getIsAvailable())) {
+                        throw new ConflictException("Selected slot is not available");
+                }
 
                 if (appointmentRepo.existsOverlappingAppointment(doctor.getId(), start, end)) {
                         log.warn("Overlap detected for doctor {} at {}", doctor.getId(), start);

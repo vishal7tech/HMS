@@ -4,11 +4,13 @@ import com.vishal.hms_backend.dto.AppointmentRequestDTO;
 import com.vishal.hms_backend.dto.AppointmentResponseDTO;
 import com.vishal.hms_backend.entity.Appointment;
 import com.vishal.hms_backend.entity.AppointmentStatus;
+import com.vishal.hms_backend.entity.AvailabilitySlot;
 import com.vishal.hms_backend.entity.DoctorProfile;
 import com.vishal.hms_backend.entity.PatientProfile;
 import com.vishal.hms_backend.entity.User;
 import com.vishal.hms_backend.exception.ConflictException;
 import com.vishal.hms_backend.repository.AppointmentRepository;
+import com.vishal.hms_backend.repository.AvailabilitySlotRepository;
 import com.vishal.hms_backend.repository.DoctorProfileRepository;
 import com.vishal.hms_backend.repository.PatientProfileRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -19,7 +21,11 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import jakarta.persistence.EntityNotFoundException;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -40,6 +46,9 @@ class AppointmentServiceTest {
     private DoctorProfileRepository doctorRepo;
 
     @Mock
+    private AvailabilitySlotRepository availabilitySlotRepo;
+
+    @Mock
     private EmailService emailService;
 
     @Mock
@@ -55,6 +64,7 @@ class AppointmentServiceTest {
     private DoctorProfile doctor;
     private Appointment appointment;
     private AppointmentRequestDTO requestDTO;
+    private AvailabilitySlot availabilitySlot;
 
     @BeforeEach
     void setUp() {
@@ -88,6 +98,15 @@ class AppointmentServiceTest {
                 .status(AppointmentStatus.SCHEDULED)
                 .build();
 
+        availabilitySlot = AvailabilitySlot.builder()
+                .id(1L)
+                .doctor(doctor)
+                .date(now.plusDays(1).toLocalDate())
+                .startTime(now.plusDays(1).toLocalTime())
+                .endTime(now.plusDays(1).toLocalTime().plusMinutes(30))
+                .isAvailable(true)
+                .build();
+
         requestDTO = new AppointmentRequestDTO();
         requestDTO.setPatientId(1L);
         requestDTO.setDoctorId(2L);
@@ -99,6 +118,11 @@ class AppointmentServiceTest {
     void bookAppointment_WhenValid_ShouldCreateAndReturnAppointment() {
         when(patientRepo.findById(1L)).thenReturn(Optional.of(patient));
         when(doctorRepo.findById(2L)).thenReturn(Optional.of(doctor));
+        
+        List<AvailabilitySlot> slots = new ArrayList<>();
+        slots.add(availabilitySlot);
+        when(availabilitySlotRepo.findByDoctorIdAndDate(eq(2L), any(LocalDate.class))).thenReturn(slots);
+        
         when(appointmentRepo.existsOverlappingAppointment(eq(2L), any(LocalDateTime.class), any(LocalDateTime.class)))
                 .thenReturn(false);
         when(appointmentRepo.save(any(Appointment.class))).thenReturn(appointment);
@@ -115,6 +139,11 @@ class AppointmentServiceTest {
     void bookAppointment_WhenOverlap_ShouldReturnSuggestions() {
         when(patientRepo.findById(1L)).thenReturn(Optional.of(patient));
         when(doctorRepo.findById(2L)).thenReturn(Optional.of(doctor));
+        
+        List<AvailabilitySlot> slots = new ArrayList<>();
+        slots.add(availabilitySlot);
+        when(availabilitySlotRepo.findByDoctorIdAndDate(eq(2L), any(LocalDate.class))).thenReturn(slots);
+        
         when(appointmentRepo.existsOverlappingAppointment(eq(2L), any(LocalDateTime.class), any(LocalDateTime.class)))
                 .thenReturn(true);
 
